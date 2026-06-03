@@ -11,15 +11,19 @@ namespace AppointmentSaaS.Tests.Application.Auth;
 public class LoginCommandHandlerTests
 {
     private readonly Mock<IIdentityService> _identityServiceMock = new();
-    private readonly Mock<ITokenService> _tokenServiceMock = new();
+    private readonly Mock<IJwtService> _jwtServiceMock = new();
     private readonly Mock<IRepository<AppUser>> _appUserRepoMock = new();
+    private readonly Mock<IRepository<RefreshToken>> _refreshTokenRepoMock = new();
     private readonly Mock<ITenantRepository> _tenantRepoMock = new();
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
 
     private LoginCommandHandler CreateHandler() => new(
         _identityServiceMock.Object,
-        _tokenServiceMock.Object,
+        _jwtServiceMock.Object,
         _appUserRepoMock.Object,
-        _tenantRepoMock.Object);
+        _refreshTokenRepoMock.Object,
+        _tenantRepoMock.Object,
+        _unitOfWorkMock.Object);
 
     [Fact]
     public async Task Handle_WithInvalidTenantSlug_ShouldThrowNotFoundException()

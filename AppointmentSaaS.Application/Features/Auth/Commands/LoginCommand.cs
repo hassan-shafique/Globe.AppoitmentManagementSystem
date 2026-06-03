@@ -11,9 +11,11 @@ public record LoginCommand(string Email, string Password, string TenantSlug) : I
 
 public class LoginCommandHandler(
     IIdentityService identityService,
-    ITokenService tokenService,
+    IJwtService jwtService,
     IRepository<AppUser> appUserRepository,
-    ITenantRepository tenantRepository)
+    IRepository<RefreshToken> refreshTokenRepository,
+    ITenantRepository tenantRepository,
+    IUnitOfWork unitOfWork)
     : IRequestHandler<LoginCommand, LoginResponse>
 {
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken ct)
@@ -31,8 +33,11 @@ public class LoginCommandHandler(
         var appUser = appUsers.FirstOrDefault()
             ?? throw new ForbiddenException("User does not belong to this tenant.");
 
-        var accessToken = tokenService.GenerateAccessToken(appUser, request.Email, roles);
-        var refreshToken = tokenService.GenerateRefreshToken(appUser.Id);
+        var accessToken = jwtService.GenerateAccessToken(appUser, request.Email, roles);
+        var refreshToken = jwtService.GenerateRefreshToken(appUser.Id);
+
+        await refreshTokenRepository.AddAsync(refreshToken, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return new LoginResponse(
             accessToken,

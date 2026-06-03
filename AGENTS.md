@@ -82,6 +82,8 @@ Customer (M) >── AppUser (1)      [optional link when customer self-register
 - All data access MUST go through Repository interfaces, never directly via DbContext in Application
 - Always check for appointment conflicts via `IAppointmentRepository.HasConflictAsync` before creating
 - JWT tokens read from `HttpOnly` cookies; refresh tokens stored in DB with expiry
+- **Token rotation**: on every `/api/auth/refresh`, old refresh token is revoked (`"Replaced"`) and a new one issued — both persisted via `IRepository<RefreshToken>` + `IUnitOfWork`
+- **Revocation**: call `RevokeTokenCommand` to invalidate any active refresh token; `RefreshToken.IsActive` (not revoked AND not expired) guards all token use
 - Tenant context MUST be validated in all Application handlers that write data
 - NEVER physically delete `SoftDeleteEntity` rows — call `SoftDelete()` instead
 - `Appointment` takes either `ClientId` (AppUser) or `CustomerId` (Customer) — validate that exactly one is set

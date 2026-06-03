@@ -50,7 +50,7 @@ Orchestration layer. Depends only on Domain.
 - **Pipeline Behaviours** — Cross-cutting concerns: logging, validation
 - **DTOs** — Data transfer objects for layer boundaries
 - **Validators** — FluentValidation validators for commands/queries
-- **Service Interfaces** — `ITokenService`, `ICurrentUserService`, `IEmailService`
+- **Service Interfaces** — `IJwtService`, `ICurrentUserService`, `IEmailService`
 - **AutoMapper Profiles** — Entity → DTO projections
 
 ### Infrastructure (AppointmentSaaS.Infrastructure)
@@ -61,7 +61,7 @@ Implements Application and Domain interfaces. Adapts external systems.
 - **Repository Implementations** — `Repository<T>`, `AppointmentRepository`, `TenantRepository`
 - **UnitOfWork** — Transaction management over EF Core
 - **Identity** — `ApplicationIdentityUser` extending `IdentityUser`
-- **TokenService** — JWT generation and refresh token creation
+- **TokenService / JwtService** — JWT generation and refresh token creation
 - **CurrentUserService** — Extracts user context from `HttpContext`
 - **EmailService** — Email notification stub (ready for SMTP/SendGrid integration)
 - **DataSeeder** — Initial role and tenant seed data
@@ -140,7 +140,41 @@ Request → JWT Token → Claims (tenantId) → ICurrentUserService → Applicat
 - `CurrentUserService` reads `tenantId` from JWT claims
 - Application handlers extract `TenantId` from `ICurrentUserService` and scope all queries/mutations
 
-## Authentication Flow
+## JWT Authentication Design
+
+### Service: `JwtService` (`IJwtService`)
+
+| Method | Description |
+|--------|-------------|
+| `GenerateAccessToken(user, email, roles)` | Creates a signed JWT (HS256) with `sub`, `email`, `jti`, `tenantId`, `fullName`, and role claims. Expiry from `JwtSettings:ExpiryMinutes` (default 60 min). |
+| `GenerateRefreshToken(appUserId)` | Creates an opaque 64-byte Base64 token via `RandomNumberGenerator`. Returns a `RefreshToken` domain object (7-day expiry). **Not yet persisted — caller must save via repository.** |
+| `GetUserIdFromExpiredToken(token)` | Validates JWT signature only (ignores lifetime). Used by `RefreshTokenCommand` to identify the user from an expired access token. |
+
+### Entity: `RefreshToken` (BaseEntity)
+
+```
+Token          — opaque secret string (unique index)
+AppUserId      — FK to AppUser (cascade delete)
+ExpiresAt      — UTC expiry
+IsRevoked      — explicit revocation flag
+ReplacedByToken — audit trail: which token replaced this one
+RevokedReason  — "Replaced" | "Manually revoked" | "SecurityReset"
+IsActive       — computed: !IsRevoked && !IsExpired
+```
+
+### Token Lifecycle
+
+```
+Login  → JwtService.GenerateRefreshToken() → saved to DB → returned to client
+       
+Refresh → verify JWT signature (expired OK) → load RefreshToken from DB
+        → assert IsActive → old.Revoke("Replaced", newToken)
+        → JwtService.GenerateRefreshToken() → saved to DB → new tokens returned
+
+Revoke / Logout → RevokeTokenCommand → token.Revoke("Manually revoked") → saved
+```
+
+
 
 ```
 1. POST /api/auth/login

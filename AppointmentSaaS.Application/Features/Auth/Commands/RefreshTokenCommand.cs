@@ -10,7 +10,7 @@ namespace AppointmentSaaS.Application.Features.Auth.Commands;
 public record RefreshTokenCommand(string AccessToken, string RefreshToken) : IRequest<LoginResponse>;
 
 public class RefreshTokenCommandHandler(
-    ITokenService tokenService,
+    IJwtService jwtService,
     IRepository<AppUser> appUserRepository,
     IRepository<RefreshToken> refreshTokenRepository,
     IIdentityService identityService,
@@ -19,7 +19,7 @@ public class RefreshTokenCommandHandler(
 {
     public async Task<LoginResponse> Handle(RefreshTokenCommand request, CancellationToken ct)
     {
-        var userId = tokenService.GetUserIdFromExpiredToken(request.AccessToken)
+        var userId = jwtService.GetUserIdFromExpiredToken(request.AccessToken)
             ?? throw new ValidationException([new FluentValidation.Results.ValidationFailure("Token", "Invalid access token.")]);
 
         var appUser = await appUserRepository.GetByIdAsync(userId, ct)
@@ -32,13 +32,13 @@ public class RefreshTokenCommandHandler(
         if (storedToken == null || !storedToken.IsActive)
             throw new ValidationException([new FluentValidation.Results.ValidationFailure("RefreshToken", "Invalid or expired refresh token.")]);
 
-        var newRefreshToken = tokenService.GenerateRefreshToken(appUser.Id);
+        var newRefreshToken = jwtService.GenerateRefreshToken(appUser.Id);
         storedToken.Revoke("Replaced", newRefreshToken.Token);
         await refreshTokenRepository.AddAsync(newRefreshToken, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
         var roles = await identityService.GetRolesAsync(appUser.IdentityUserId);
-        var accessToken = tokenService.GenerateAccessToken(appUser, appUser.Email, roles);
+        var accessToken = jwtService.GenerateAccessToken(appUser, appUser.Email, roles);
 
         return new LoginResponse(accessToken, newRefreshToken.Token, DateTime.UtcNow.AddMinutes(60),
             appUser.Id.ToString(), appUser.Email, appUser.FullName,
