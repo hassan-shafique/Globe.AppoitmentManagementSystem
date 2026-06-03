@@ -1,0 +1,15 @@
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\bin\Debug\net9.0\AppointmentSaaS.Application.deps.json
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\bin\Debug\net9.0\AppointmentSaaS.Application.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\bin\Debug\net9.0\AppointmentSaaS.Application.pdb
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\bin\Debug\net9.0\AppointmentSaaS.Domain.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\bin\Debug\net9.0\AppointmentSaaS.Domain.pdb
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.csproj.AssemblyReference.cache
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.GeneratedMSBuildEditorConfig.editorconfig
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.AssemblyInfoInputs.cache
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.AssemblyInfo.cs
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.csproj.CoreCompileInputs.cache
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\Appointm.B0B92961.Up2Date
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\refint\AppointmentSaaS.Application.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.pdb
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\ref\AppointmentSaaS.Application.dll

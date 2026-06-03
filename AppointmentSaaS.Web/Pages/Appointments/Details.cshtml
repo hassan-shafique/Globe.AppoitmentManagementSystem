@@ -1,0 +1,41 @@
+@page "{id:guid}"
+@model AppointmentSaaS.Web.Pages.Appointments.DetailsModel
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            @if (Model.Appointment is not null)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Appointment Details</h5>
+                        <span class="badge bg-secondary fs-6">@Model.Appointment.Status</span>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">Service</dt><dd class="col-sm-8">@Model.Appointment.ServiceName</dd>
+                            <dt class="col-sm-4">Staff</dt><dd class="col-sm-8">@Model.Appointment.StaffName</dd>
+                            <dt class="col-sm-4">Client</dt><dd class="col-sm-8">@Model.Appointment.ClientName</dd>
+                            <dt class="col-sm-4">Start</dt><dd class="col-sm-8">@Model.Appointment.StartTime.ToString("dddd, MMMM d, yyyy h:mm tt")</dd>
+                            <dt class="col-sm-4">End</dt><dd class="col-sm-8">@Model.Appointment.EndTime.ToString("h:mm tt")</dd>
+                            @if (!string.IsNullOrEmpty(Model.Appointment.Notes))
+                            {
+                                <dt class="col-sm-4">Notes</dt><dd class="col-sm-8">@Model.Appointment.Notes</dd>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Appointment.CancellationReason))
+                            {
+                                <dt class="col-sm-4">Cancellation</dt><dd class="col-sm-8 text-danger">@Model.Appointment.CancellationReason</dd>
+                            }
+                        </dl>
+                    </div>
+                    <div class="card-footer d-flex gap-2">
+                        <a asp-page="Index" class="btn btn-outline-secondary">Back</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

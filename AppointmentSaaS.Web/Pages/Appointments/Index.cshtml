@@ -1,0 +1,48 @@
+@page
+@model AppointmentSaaS.Web.Pages.Appointments.IndexModel
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">All Appointments</h2>
+        <a asp-page="Create" class="btn btn-primary">+ New Appointment</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            @if (Model.Appointments.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Client</th><th>Service</th><th>Staff</th>
+                                <th>Start</th><th>End</th><th>Status</th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var apt in Model.Appointments)
+                            {
+                                <tr>
+                                    <td>@apt.ClientName</td>
+                                    <td>@apt.ServiceName</td>
+                                    <td>@apt.StaffName</td>
+                                    <td>@apt.StartTime.ToString("MMM d, h:mm tt")</td>
+                                    <td>@apt.EndTime.ToString("h:mm tt")</td>
+                                    <td><span class="badge bg-secondary">@apt.Status</span></td>
+                                    <td><a asp-page="Details" asp-route-id="@apt.Id" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">No appointments found.</div>
+            }
+        </div>
+    </div>
+</div>

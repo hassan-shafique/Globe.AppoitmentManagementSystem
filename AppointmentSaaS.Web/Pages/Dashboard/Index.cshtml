@@ -1,0 +1,136 @@
+@page
+@model AppointmentSaaS.Web.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold">Dashboard</h2>
+            <p class="text-muted">Welcome back! Here's your appointment overview.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-page="/Appointments/Create" class="btn btn-primary">
+                + New Appointment
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="card-text small opacity-75">Total Appointments</p>
+                            <h3 class="fw-bold">@Model.TotalAppointments</h3>
+                        </div>
+                        <div class="fs-2">📅</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="card-text small opacity-75">Confirmed</p>
+                            <h3 class="fw-bold">@Model.ConfirmedCount</h3>
+                        </div>
+                        <div class="fs-2">✅</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="card-text small opacity-75">Pending</p>
+                            <h3 class="fw-bold">@Model.PendingCount</h3>
+                        </div>
+                        <div class="fs-2">⏳</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="card-text small opacity-75">Cancelled</p>
+                            <h3 class="fw-bold">@Model.CancelledCount</h3>
+                        </div>
+                        <div class="fs-2">❌</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Appointments</h5>
+            <a asp-page="/Appointments/Index" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.RecentAppointments.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Client</th>
+                                <th>Service</th>
+                                <th>Staff</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var apt in Model.RecentAppointments)
+                            {
+                                <tr>
+                                    <td>@apt.ClientName</td>
+                                    <td>@apt.ServiceName</td>
+                                    <td>@apt.StaffName</td>
+                                    <td>@apt.StartTime.ToString("MMM d, yyyy h:mm tt")</td>
+                                    <td>
+                                        <span class="badge @GetStatusBadge(apt.Status.ToString())">@apt.Status</span>
+                                    </td>
+                                    <td>
+                                        <a asp-page="/Appointments/Details" asp-route-id="@apt.Id" class="btn btn-sm btn-outline-secondary">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+                    <div class="fs-1">📭</div>
+                    <p>No appointments yet. <a asp-page="/Appointments/Create">Create your first one!</a></p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadge(string status) => status switch
+    {
+        "Confirmed" => "bg-success",
+        "Pending" => "bg-warning text-dark",
+        "Cancelled" => "bg-danger",
+        "Completed" => "bg-secondary",
+        "NoShow" => "bg-dark",
+        _ => "bg-light text-dark"
+    };
+}

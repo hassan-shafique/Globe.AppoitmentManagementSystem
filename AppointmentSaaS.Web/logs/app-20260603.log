@@ -1,0 +1,322 @@
+2026-06-03 18:00:42.483 +05:00 [FTL] Application startup failed
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at System.Diagnostics.DiagnosticSource.Write[T](String name, T value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\Program.cs:line 28
+2026-06-03 18:01:16.210 +05:00 [FTL] Application startup failed
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at System.Diagnostics.DiagnosticSource.Write[T](String name, T value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\Program.cs:line 28
+2026-06-03 18:04:33.084 +05:00 [INF] User profile is available. Using 'C:\Users\mshafique\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-06-03 18:04:33.694 +05:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-06-03 18:04:33.725 +05:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsLock' AND "type" = 'table';
+2026-06-03 18:04:33.741 +05:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT OR IGNORE INTO "__EFMigrationsLock"("Id", "Timestamp") VALUES(1, '2026-06-03 13:04:33.7332104+00:00');
+SELECT changes();
+2026-06-03 18:04:33.797 +05:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+    "ProductVersion" TEXT NOT NULL
+);
+2026-06-03 18:04:33.814 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2026-06-03 18:04:33.821 +05:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-06-03 18:04:33.832 +05:00 [INF] No migrations were applied. The database is already up to date.
+2026-06-03 18:04:33.843 +05:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "__EFMigrationsLock";
+2026-06-03 18:04:34.069 +05:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedName_0='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.078 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.170 +05:00 [INF] Executed DbCommand (8ms) [Parameters=[@p0='?' (Size = 36), @p1='?', @p2='?' (Size = 10), @p3='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AspNetRoles" ("Id", "ConcurrencyStamp", "Name", "NormalizedName")
+VALUES (@p0, @p1, @p2, @p3);
+2026-06-03 18:04:34.181 +05:00 [INF] Created role: SuperAdmin
+2026-06-03 18:04:34.183 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 11)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.188 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 11)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.194 +05:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (Size = 36), @p1='?', @p2='?' (Size = 11), @p3='?' (Size = 11)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AspNetRoles" ("Id", "ConcurrencyStamp", "Name", "NormalizedName")
+VALUES (@p0, @p1, @p2, @p3);
+2026-06-03 18:04:34.197 +05:00 [INF] Created role: TenantAdmin
+2026-06-03 18:04:34.199 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.202 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.206 +05:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (Size = 36), @p1='?', @p2='?' (Size = 5), @p3='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AspNetRoles" ("Id", "ConcurrencyStamp", "Name", "NormalizedName")
+VALUES (@p0, @p1, @p2, @p3);
+2026-06-03 18:04:34.209 +05:00 [INF] Created role: Staff
+2026-06-03 18:04:34.210 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.212 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2026-06-03 18:04:34.215 +05:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (Size = 36), @p1='?', @p2='?' (Size = 6), @p3='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AspNetRoles" ("Id", "ConcurrencyStamp", "Name", "NormalizedName")
+VALUES (@p0, @p1, @p2, @p3);
+2026-06-03 18:04:34.217 +05:00 [INF] Created role: Client
+2026-06-03 18:04:34.228 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Tenants" AS "t")
+2026-06-03 18:04:34.284 +05:00 [INF] Executed DbCommand (8ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 15), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?' (Size = 18), @p8='?' (Size = 5), @p9='?' (DbType = DateTime), @p10='?'], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Tenants" ("Id", "ContactEmail", "ContactPhone", "CreatedAt", "CreatedBy", "IsActive", "LogoUrl", "Name", "Slug", "UpdatedAt", "UpdatedBy")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);
+2026-06-03 18:04:34.364 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedUserName_0='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."AccessFailedCount", "a"."ConcurrencyStamp", "a"."Email", "a"."EmailConfirmed", "a"."FirstName", "a"."LastName", "a"."LockoutEnabled", "a"."LockoutEnd", "a"."NormalizedEmail", "a"."NormalizedUserName", "a"."PasswordHash", "a"."PhoneNumber", "a"."PhoneNumberConfirmed", "a"."SecurityStamp", "a"."TwoFactorEnabled", "a"."UserName"
+FROM "AspNetUsers" AS "a"
+WHERE "a"."NormalizedUserName" = @__normalizedUserName_0
+LIMIT 1
+2026-06-03 18:04:34.373 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedEmail_0='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."AccessFailedCount", "a"."ConcurrencyStamp", "a"."Email", "a"."EmailConfirmed", "a"."FirstName", "a"."LastName", "a"."LockoutEnabled", "a"."LockoutEnd", "a"."NormalizedEmail", "a"."NormalizedUserName", "a"."PasswordHash", "a"."PhoneNumber", "a"."PhoneNumberConfirmed", "a"."SecurityStamp", "a"."TwoFactorEnabled", "a"."UserName"
+FROM "AspNetUsers" AS "a"
+WHERE "a"."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2026-06-03 18:04:34.414 +05:00 [INF] Executed DbCommand (8ms) [Parameters=[@p0='?' (Size = 36), @p1='?' (DbType = Int32), @p2='?' (Size = 36), @p3='?' (Size = 15), @p4='?' (DbType = Boolean), @p5='?' (Size = 5), @p6='?' (Size = 4), @p7='?' (DbType = Boolean), @p8='?' (DbType = DateTimeOffset), @p9='?' (Size = 15), @p10='?' (Size = 15), @p11='?' (Size = 84), @p12='?', @p13='?' (DbType = Boolean), @p14='?' (Size = 32), @p15='?' (DbType = Boolean), @p16='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AspNetUsers" ("Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16);
+2026-06-03 18:04:34.423 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedRoleName_0='?' (Size = 11)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2026-06-03 18:04:34.439 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__p_0='?' (Size = 36), @__p_1='?' (Size = 36)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."UserId", "a"."RoleId"
+FROM "AspNetUserRoles" AS "a"
+WHERE "a"."UserId" = @__p_0 AND "a"."RoleId" = @__p_1
+LIMIT 1
+2026-06-03 18:04:34.443 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedRoleName_0='?' (Size = 11)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."ConcurrencyStamp", "a"."Name", "a"."NormalizedName"
+FROM "AspNetRoles" AS "a"
+WHERE "a"."NormalizedName" = @__normalizedRoleName_0
+LIMIT 2
+2026-06-03 18:04:34.450 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedUserName_0='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."AccessFailedCount", "a"."ConcurrencyStamp", "a"."Email", "a"."EmailConfirmed", "a"."FirstName", "a"."LastName", "a"."LockoutEnabled", "a"."LockoutEnd", "a"."NormalizedEmail", "a"."NormalizedUserName", "a"."PasswordHash", "a"."PhoneNumber", "a"."PhoneNumberConfirmed", "a"."SecurityStamp", "a"."TwoFactorEnabled", "a"."UserName"
+FROM "AspNetUsers" AS "a"
+WHERE "a"."NormalizedUserName" = @__normalizedUserName_0
+LIMIT 1
+2026-06-03 18:04:34.454 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedEmail_0='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."AccessFailedCount", "a"."ConcurrencyStamp", "a"."Email", "a"."EmailConfirmed", "a"."FirstName", "a"."LastName", "a"."LockoutEnabled", "a"."LockoutEnd", "a"."NormalizedEmail", "a"."NormalizedUserName", "a"."PasswordHash", "a"."PhoneNumber", "a"."PhoneNumberConfirmed", "a"."SecurityStamp", "a"."TwoFactorEnabled", "a"."UserName"
+FROM "AspNetUsers" AS "a"
+WHERE "a"."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2026-06-03 18:04:34.462 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (Size = 36), @p1='?' (Size = 36)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AspNetUserRoles" ("RoleId", "UserId")
+VALUES (@p0, @p1);
+2026-06-03 18:04:34.466 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@p16='?' (Size = 36), @p0='?' (DbType = Int32), @p1='?' (Size = 36), @p17='?' (Size = 36), @p2='?' (Size = 15), @p3='?' (DbType = Boolean), @p4='?' (Size = 5), @p5='?' (Size = 4), @p6='?' (DbType = Boolean), @p7='?' (DbType = DateTimeOffset), @p8='?' (Size = 15), @p9='?' (Size = 15), @p10='?' (Size = 84), @p11='?', @p12='?' (DbType = Boolean), @p13='?' (Size = 32), @p14='?' (DbType = Boolean), @p15='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "AspNetUsers" SET "AccessFailedCount" = @p0, "ConcurrencyStamp" = @p1, "Email" = @p2, "EmailConfirmed" = @p3, "FirstName" = @p4, "LastName" = @p5, "LockoutEnabled" = @p6, "LockoutEnd" = @p7, "NormalizedEmail" = @p8, "NormalizedUserName" = @p9, "PasswordHash" = @p10, "PhoneNumber" = @p11, "PhoneNumberConfirmed" = @p12, "SecurityStamp" = @p13, "TwoFactorEnabled" = @p14, "UserName" = @p15
+WHERE "Id" = @p16 AND "ConcurrencyStamp" = @p17
+RETURNING 1;
+2026-06-03 18:04:34.516 +05:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (Size = 15), @p4='?' (Size = 5), @p5='?' (Size = 36), @p6='?' (DbType = Boolean), @p7='?' (Size = 4), @p8='?', @p9='?' (DbType = Int32), @p10='?' (DbType = Guid), @p11='?' (DbType = DateTime), @p12='?'], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AppUsers" ("Id", "CreatedAt", "CreatedBy", "Email", "FirstName", "IdentityUserId", "IsActive", "LastName", "Phone", "Role", "TenantId", "UpdatedAt", "UpdatedBy")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12);
+2026-06-03 18:04:34.519 +05:00 [INF] Seeded default tenant and admin user
+2026-06-03 18:04:34.681 +05:00 [INF] Now listening on: http://localhost:5006
+2026-06-03 18:04:34.683 +05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-03 18:04:34.683 +05:00 [INF] Hosting environment: Development
+2026-06-03 18:04:34.684 +05:00 [INF] Content root path: Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web
+2026-06-03 18:04:41.126 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/ - null null
+2026-06-03 18:04:41.131 +05:00 [WRN] Failed to determine the https port for redirect.
+2026-06-03 18:04:42.554 +05:00 [INF] Executing endpoint '/Index'
+2026-06-03 18:04:42.568 +05:00 [INF] Route matched with {page = "/Index", action = "", controller = ""}. Executing page /Index
+2026-06-03 18:04:42.576 +05:00 [INF] Executing handler method AppointmentSaaS.Web.Pages.IndexModel.OnGet - ModelState is "Valid"
+2026-06-03 18:04:42.578 +05:00 [INF] Home page visited
+2026-06-03 18:04:42.579 +05:00 [INF] Executed handler method OnGet, returned result .
+2026-06-03 18:04:42.582 +05:00 [INF] Executing an implicit handler method - ModelState is "Valid"
+2026-06-03 18:04:42.582 +05:00 [INF] Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+2026-06-03 18:04:42.660 +05:00 [INF] Executed page /Index in 86.8031ms
+2026-06-03 18:04:42.666 +05:00 [INF] Executed endpoint '/Index'
+2026-06-03 18:04:42.669 +05:00 [INF] HTTP GET / responded 200 in 1535.4676 ms
+2026-06-03 18:04:42.674 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/ - 200 null text/html; charset=utf-8 1549.7196ms
+2026-06-03 18:04:42.678 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:04:42.678 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation/dist/jquery.validate.min.js - null null
+2026-06-03 18:04:42.678 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery/dist/jquery.min.js - null null
+2026-06-03 18:04:42.679 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo - null null
+2026-06-03 18:04:42.679 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/css/site.css?v=j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg - null null
+2026-06-03 18:04:42.686 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 2.3331 ms
+2026-06-03 18:04:42.698 +05:00 [INF] Sending file. Request path: '/js/site.js'. Physical path: 'Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\wwwroot\js\site.js'
+2026-06-03 18:04:42.701 +05:00 [INF] Sending file. Request path: '/css/site.css'. Physical path: 'Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\wwwroot\css\site.css'
+2026-06-03 18:04:42.704 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 25.0094ms
+2026-06-03 18:04:42.706 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo - 200 231 text/javascript 26.7431ms
+2026-06-03 18:04:42.708 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/css/site.css?v=j6fhJSuuyLpOSLuPJU0TsDV0iNjor5S3rDnvxJrt4bg - 200 667 text/css 29.2174ms
+2026-06-03 18:04:42.714 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:04:42.759 +05:00 [INF] Sending file. Request path: '/lib/jquery/dist/jquery.min.js'. Physical path: 'Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\wwwroot\lib\jquery\dist\jquery.min.js'
+2026-06-03 18:04:42.759 +05:00 [INF] Sending file. Request path: '/lib/jquery-validation/dist/jquery.validate.min.js'. Physical path: 'Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js'
+2026-06-03 18:04:42.762 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery/dist/jquery.min.js - 200 87533 text/javascript 83.9648ms
+2026-06-03 18:04:42.764 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation/dist/jquery.validate.min.js - 200 25308 text/javascript 85.2299ms
+2026-06-03 18:04:42.931 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:04:42.937 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 2.2369 ms
+2026-06-03 18:04:42.940 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 8.5469ms
+2026-06-03 18:04:42.942 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:04:42.987 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/favicon.ico - null null
+2026-06-03 18:04:42.997 +05:00 [INF] Sending file. Request path: '/favicon.ico'. Physical path: 'Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\wwwroot\favicon.ico'
+2026-06-03 18:04:43.000 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/favicon.ico - 200 5430 image/x-icon 13.476ms
+2026-06-03 18:04:47.806 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/Auth/Login - null null
+2026-06-03 18:04:47.810 +05:00 [INF] Executing endpoint '/Auth/Login'
+2026-06-03 18:04:47.820 +05:00 [INF] Route matched with {page = "/Auth/Login", action = "", controller = ""}. Executing page /Auth/Login
+2026-06-03 18:04:47.830 +05:00 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-06-03 18:04:47.834 +05:00 [INF] Executing handler method AppointmentSaaS.Web.Pages.Auth.LoginModel.OnGet - ModelState is "Valid"
+2026-06-03 18:04:47.836 +05:00 [INF] Executed handler method OnGet, returned result .
+2026-06-03 18:04:47.838 +05:00 [INF] Executing an implicit handler method - ModelState is "Valid"
+2026-06-03 18:04:47.838 +05:00 [INF] Executed an implicit handler method, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+2026-06-03 18:04:47.870 +05:00 [INF] Executed page /Auth/Login in 46.3292ms
+2026-06-03 18:04:47.874 +05:00 [INF] Executed endpoint '/Auth/Login'
+2026-06-03 18:04:47.876 +05:00 [INF] HTTP GET /Auth/Login responded 200 in 66.3051 ms
+2026-06-03 18:04:47.878 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/Auth/Login - 200 null text/html; charset=utf-8 71.9122ms
+2026-06-03 18:04:47.891 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:04:47.892 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:04:47.895 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.5522 ms
+2026-06-03 18:04:47.899 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 8.2966ms
+2026-06-03 18:04:47.902 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:04:47.912 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:04:47.916 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.1496 ms
+2026-06-03 18:04:47.918 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 5.2805ms
+2026-06-03 18:04:47.923 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:04:47.932 +05:00 [INF] Sending file. Request path: '/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js'. Physical path: 'Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js'
+2026-06-03 18:04:47.935 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js - 200 5824 text/javascript 42.9849ms
+2026-06-03 18:05:05.691 +05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5006/Auth/Login - application/x-www-form-urlencoded 265
+2026-06-03 18:05:05.694 +05:00 [INF] Executing endpoint '/Auth/Login'
+2026-06-03 18:05:05.695 +05:00 [INF] Route matched with {page = "/Auth/Login", action = "", controller = ""}. Executing page /Auth/Login
+2026-06-03 18:05:05.711 +05:00 [INF] Executing handler method AppointmentSaaS.Web.Pages.Auth.LoginModel.OnPostAsync - ModelState is "Valid"
+2026-06-03 18:05:05.716 +05:00 [INF] Handling LoginCommand
+2026-06-03 18:05:05.754 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__ToLowerInvariant_0='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+SELECT "t"."Id", "t"."ContactEmail", "t"."ContactPhone", "t"."CreatedAt", "t"."CreatedBy", "t"."IsActive", "t"."LogoUrl", "t"."Name", "t"."Slug", "t"."UpdatedAt", "t"."UpdatedBy"
+FROM "Tenants" AS "t"
+WHERE "t"."Slug" = @__ToLowerInvariant_0
+LIMIT 1
+2026-06-03 18:05:05.765 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__normalizedEmail_0='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."AccessFailedCount", "a"."ConcurrencyStamp", "a"."Email", "a"."EmailConfirmed", "a"."FirstName", "a"."LastName", "a"."LockoutEnabled", "a"."LockoutEnd", "a"."NormalizedEmail", "a"."NormalizedUserName", "a"."PasswordHash", "a"."PhoneNumber", "a"."PhoneNumberConfirmed", "a"."SecurityStamp", "a"."TwoFactorEnabled", "a"."UserName"
+FROM "AspNetUsers" AS "a"
+WHERE "a"."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2026-06-03 18:05:05.863 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__userId_0='?' (Size = 36)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a0"."Name"
+FROM "AspNetUserRoles" AS "a"
+INNER JOIN "AspNetRoles" AS "a0" ON "a"."RoleId" = "a0"."Id"
+WHERE "a"."UserId" = @__userId_0
+2026-06-03 18:05:05.874 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__identityUserId_0='?' (Size = 36), @__tenant_Id_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."CreatedAt", "a"."CreatedBy", "a"."Email", "a"."FirstName", "a"."IdentityUserId", "a"."IsActive", "a"."LastName", "a"."Phone", "a"."Role", "a"."TenantId", "a"."UpdatedAt", "a"."UpdatedBy"
+FROM "AppUsers" AS "a"
+WHERE "a"."IdentityUserId" = @__identityUserId_0 AND "a"."TenantId" = @__tenant_Id_1
+2026-06-03 18:05:05.926 +05:00 [INF] Handled LoginCommand
+2026-06-03 18:05:05.928 +05:00 [INF] Executed handler method OnPostAsync, returned result Microsoft.AspNetCore.Mvc.RedirectToPageResult.
+2026-06-03 18:05:05.930 +05:00 [INF] Executing RedirectToPageResult, redirecting to /Dashboard/Index.
+2026-06-03 18:05:05.931 +05:00 [INF] Executed page /Auth/Login in 234.5627ms
+2026-06-03 18:05:05.931 +05:00 [INF] Executed endpoint '/Auth/Login'
+2026-06-03 18:05:05.932 +05:00 [INF] HTTP POST /Auth/Login responded 302 in 238.6729 ms
+2026-06-03 18:05:05.937 +05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5006/Auth/Login - 302 0 null 245.9167ms
+2026-06-03 18:05:05.940 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/Dashboard - null null
+2026-06-03 18:05:05.969 +05:00 [INF] Executing endpoint '/Dashboard/Index'
+2026-06-03 18:05:05.974 +05:00 [INF] Route matched with {page = "/Dashboard/Index", action = "", controller = ""}. Executing page /Dashboard/Index
+2026-06-03 18:05:05.976 +05:00 [INF] Executing handler method AppointmentSaaS.Web.Pages.Dashboard.IndexModel.OnGetAsync - ModelState is "Valid"
+2026-06-03 18:05:05.978 +05:00 [INF] Handling GetAppointmentsByTenantQuery
+2026-06-03 18:05:06.039 +05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-06-03 18:05:06.107 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__tenantId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."CancellationReason", "a"."ClientId", "a"."CreatedAt", "a"."CreatedBy", "a"."EndTime", "a"."Notes", "a"."ServiceId", "a"."StaffId", "a"."StartTime", "a"."Status", "a"."TenantId", "a"."UpdatedAt", "a"."UpdatedBy", "s"."Id", "s"."CreatedAt", "s"."CreatedBy", "s"."Description", "s"."DurationMinutes", "s"."IsActive", "s"."Name", "s"."Price", "s"."TenantId", "s"."UpdatedAt", "s"."UpdatedBy", "s0"."Id", "s0"."Bio", "s0"."CreatedAt", "s0"."CreatedBy", "s0"."Email", "s0"."FirstName", "s0"."IdentityUserId", "s0"."IsActive", "s0"."LastName", "s0"."Phone", "s0"."TenantId", "s0"."UpdatedAt", "s0"."UpdatedBy", "a0"."Id", "a0"."CreatedAt", "a0"."CreatedBy", "a0"."Email", "a0"."FirstName", "a0"."IdentityUserId", "a0"."IsActive", "a0"."LastName", "a0"."Phone", "a0"."Role", "a0"."TenantId", "a0"."UpdatedAt", "a0"."UpdatedBy"
+FROM "Appointments" AS "a"
+INNER JOIN "Services" AS "s" ON "a"."ServiceId" = "s"."Id"
+INNER JOIN "Staff" AS "s0" ON "a"."StaffId" = "s0"."Id"
+INNER JOIN "AppUsers" AS "a0" ON "a"."ClientId" = "a0"."Id"
+WHERE "a"."TenantId" = @__tenantId_0
+ORDER BY "a"."StartTime" DESC
+2026-06-03 18:05:06.118 +05:00 [INF] Handled GetAppointmentsByTenantQuery
+2026-06-03 18:05:06.121 +05:00 [INF] Executed handler method OnGetAsync, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+2026-06-03 18:05:06.128 +05:00 [INF] Executed page /Dashboard/Index in 152.7097ms
+2026-06-03 18:05:06.131 +05:00 [INF] Executed endpoint '/Dashboard/Index'
+2026-06-03 18:05:06.133 +05:00 [INF] HTTP GET /Dashboard responded 200 in 190.7548 ms
+2026-06-03 18:05:06.137 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/Dashboard - 200 null text/html; charset=utf-8 197.2079ms
+2026-06-03 18:05:06.173 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:05:06.180 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.6243 ms
+2026-06-03 18:05:06.183 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 10.5493ms
+2026-06-03 18:05:06.187 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:05:06.201 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:05:06.205 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.2834 ms
+2026-06-03 18:05:06.207 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 6.3516ms
+2026-06-03 18:05:06.213 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:05:13.281 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/Appointments/Create - null null
+2026-06-03 18:05:13.285 +05:00 [INF] Executing endpoint '/Appointments/Create'
+2026-06-03 18:05:13.292 +05:00 [INF] Route matched with {page = "/Appointments/Create", action = "", controller = ""}. Executing page /Appointments/Create
+2026-06-03 18:05:13.293 +05:00 [INF] Executing handler method AppointmentSaaS.Web.Pages.Appointments.CreateModel.OnGetAsync - ModelState is "Valid"
+2026-06-03 18:05:13.295 +05:00 [INF] Handling GetServicesByTenantQuery
+2026-06-03 18:05:13.303 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__request_TenantId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT "s"."Id", "s"."CreatedAt", "s"."CreatedBy", "s"."Description", "s"."DurationMinutes", "s"."IsActive", "s"."Name", "s"."Price", "s"."TenantId", "s"."UpdatedAt", "s"."UpdatedBy"
+FROM "Services" AS "s"
+WHERE "s"."TenantId" = @__request_TenantId_0 AND "s"."IsActive"
+2026-06-03 18:05:13.311 +05:00 [INF] Handled GetServicesByTenantQuery
+2026-06-03 18:05:13.313 +05:00 [INF] Executed handler method OnGetAsync, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+2026-06-03 18:05:13.333 +05:00 [INF] Executed page /Appointments/Create in 40.7712ms
+2026-06-03 18:05:13.338 +05:00 [INF] Executed endpoint '/Appointments/Create'
+2026-06-03 18:05:13.339 +05:00 [INF] HTTP GET /Appointments/Create responded 200 in 55.3241 ms
+2026-06-03 18:05:13.344 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/Appointments/Create - 200 null text/html; charset=utf-8 62.2355ms
+2026-06-03 18:05:13.351 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:05:13.356 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.3665 ms
+2026-06-03 18:05:13.359 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 8.5922ms
+2026-06-03 18:05:13.362 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:05:13.390 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:05:13.394 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.2915 ms
+2026-06-03 18:05:13.395 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 4.8735ms
+2026-06-03 18:05:13.399 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:05:24.929 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/Dashboard - null null
+2026-06-03 18:05:24.933 +05:00 [INF] Executing endpoint '/Dashboard/Index'
+2026-06-03 18:05:24.934 +05:00 [INF] Route matched with {page = "/Dashboard/Index", action = "", controller = ""}. Executing page /Dashboard/Index
+2026-06-03 18:05:24.935 +05:00 [INF] Executing handler method AppointmentSaaS.Web.Pages.Dashboard.IndexModel.OnGetAsync - ModelState is "Valid"
+2026-06-03 18:05:24.937 +05:00 [INF] Handling GetAppointmentsByTenantQuery
+2026-06-03 18:05:24.941 +05:00 [INF] Executed DbCommand (0ms) [Parameters=[@__tenantId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT "a"."Id", "a"."CancellationReason", "a"."ClientId", "a"."CreatedAt", "a"."CreatedBy", "a"."EndTime", "a"."Notes", "a"."ServiceId", "a"."StaffId", "a"."StartTime", "a"."Status", "a"."TenantId", "a"."UpdatedAt", "a"."UpdatedBy", "s"."Id", "s"."CreatedAt", "s"."CreatedBy", "s"."Description", "s"."DurationMinutes", "s"."IsActive", "s"."Name", "s"."Price", "s"."TenantId", "s"."UpdatedAt", "s"."UpdatedBy", "s0"."Id", "s0"."Bio", "s0"."CreatedAt", "s0"."CreatedBy", "s0"."Email", "s0"."FirstName", "s0"."IdentityUserId", "s0"."IsActive", "s0"."LastName", "s0"."Phone", "s0"."TenantId", "s0"."UpdatedAt", "s0"."UpdatedBy", "a0"."Id", "a0"."CreatedAt", "a0"."CreatedBy", "a0"."Email", "a0"."FirstName", "a0"."IdentityUserId", "a0"."IsActive", "a0"."LastName", "a0"."Phone", "a0"."Role", "a0"."TenantId", "a0"."UpdatedAt", "a0"."UpdatedBy"
+FROM "Appointments" AS "a"
+INNER JOIN "Services" AS "s" ON "a"."ServiceId" = "s"."Id"
+INNER JOIN "Staff" AS "s0" ON "a"."StaffId" = "s0"."Id"
+INNER JOIN "AppUsers" AS "a0" ON "a"."ClientId" = "a0"."Id"
+WHERE "a"."TenantId" = @__tenantId_0
+ORDER BY "a"."StartTime" DESC
+2026-06-03 18:05:24.944 +05:00 [INF] Handled GetAppointmentsByTenantQuery
+2026-06-03 18:05:24.944 +05:00 [INF] Executed handler method OnGetAsync, returned result Microsoft.AspNetCore.Mvc.RazorPages.PageResult.
+2026-06-03 18:05:24.946 +05:00 [INF] Executed page /Dashboard/Index in 11.0755ms
+2026-06-03 18:05:24.948 +05:00 [INF] Executed endpoint '/Dashboard/Index'
+2026-06-03 18:05:24.949 +05:00 [INF] HTTP GET /Dashboard responded 200 in 17.0372 ms
+2026-06-03 18:05:24.951 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/Dashboard - 200 null text/html; charset=utf-8 21.5561ms
+2026-06-03 18:05:24.966 +05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - null null
+2026-06-03 18:05:24.970 +05:00 [INF] HTTP GET /lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js responded 404 in 0.4204 ms
+2026-06-03 18:05:24.972 +05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js - 404 0 null 6.7776ms
+2026-06-03 18:05:24.977 +05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5006/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js, Response status code: 404
+2026-06-03 18:08:57.243 +05:00 [INF] Application is shutting down...
