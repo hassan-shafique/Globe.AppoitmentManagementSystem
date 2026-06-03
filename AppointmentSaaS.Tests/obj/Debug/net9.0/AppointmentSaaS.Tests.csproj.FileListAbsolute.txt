@@ -166,3 +166,4 @@ Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Tests\bin\Debug\n
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Tests\bin\Debug\net9.0\runtimes\win-x86\native\e_sqlite3.dll
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Tests\bin\Debug\net9.0\AppointmentSaaS.Infrastructure.dll
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Tests\bin\Debug\net9.0\AppointmentSaaS.Infrastructure.pdb
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Tests\obj\Debug\net9.0\AppointmentSaaS.Tests.sourcelink.json

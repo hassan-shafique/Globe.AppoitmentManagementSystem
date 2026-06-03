@@ -8,22 +8,23 @@ using MediatR;
 
 namespace AppointmentSaaS.Application.Features.Auth.Commands;
 
-public record RegisterCommand(string FirstName, string LastName, string Email, string Password, string TenantSlug) : IRequest<LoginResponse>;
+public record RegisterCommand(string FirstName, string LastName, string Email, string Password, string TenantSlug) : IRequest<RegisterResponse>;
 
 public class RegisterCommandHandler(
     IIdentityService identityService,
-    ITokenService tokenService,
+    IEmailService emailService,
     ITenantRepository tenantRepository,
     IRepository<AppUser> appUserRepository,
     IUnitOfWork unitOfWork)
-    : IRequestHandler<RegisterCommand, LoginResponse>
+    : IRequestHandler<RegisterCommand, RegisterResponse>
 {
-    public async Task<LoginResponse> Handle(RegisterCommand request, CancellationToken ct)
+    public async Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken ct)
     {
         var tenant = await tenantRepository.GetBySlugAsync(request.TenantSlug, ct)
             ?? throw new NotFoundException(nameof(Tenant), request.TenantSlug);
 
-        var (success, identityUserId, error) = await identityService.CreateUserAsync(request.Email, request.Password);
+        var (success, identityUserId, error) = await identityService.CreateUserAsync(
+            request.Email, request.Password, request.FirstName, request.LastName);
 
         if (!success || identityUserId is null)
             throw new ValidationException([new FluentValidation.Results.ValidationFailure("Email", error ?? "Registration failed.")]);
@@ -34,11 +35,11 @@ public class RegisterCommandHandler(
         await appUserRepository.AddAsync(appUser, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
-        var roles = await identityService.GetRolesAsync(identityUserId);
-        var accessToken = tokenService.GenerateAccessToken(appUser, request.Email, roles);
-        var refreshToken = tokenService.GenerateRefreshToken(appUser.Id);
+        var (_, verificationToken, _) = await identityService.GenerateEmailVerificationTokenAsync(request.Email);
+        if (verificationToken is not null)
+            await emailService.SendEmailVerificationAsync(request.Email, appUser.FullName, verificationToken, ct);
 
-        return new LoginResponse(accessToken, refreshToken.Token, DateTime.UtcNow.AddMinutes(60),
-            appUser.Id.ToString(), appUser.Email, appUser.FullName, UserRole.Client.ToString(), tenant.Id);
+        return new RegisterResponse(appUser.Id.ToString(), appUser.Email, appUser.FullName,
+            "Registration successful. Please check your email to verify your account.");
     }
 }

@@ -31,6 +31,34 @@ public class AuthController(IMediator mediator) : ControllerBase
         return CreatedAtAction(nameof(Login), result);
     }
 
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request, CancellationToken ct)
+    {
+        await mediator.Send(new VerifyEmailCommand(request.Email, request.Token), ct);
+        return Ok(new { Message = "Email verified successfully." });
+    }
+
+    [HttpPost("resend-verification")]
+    public async Task<IActionResult> ResendEmailVerification([FromBody] ResendEmailVerificationRequest request, CancellationToken ct)
+    {
+        await mediator.Send(new ResendEmailVerificationCommand(request.Email), ct);
+        return Ok(new { Message = "If your account exists and is unverified, a verification email has been sent." });
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken ct)
+    {
+        await mediator.Send(new ForgotPasswordCommand(request.Email), ct);
+        return Ok(new { Message = "If your account exists, a password reset email has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken ct)
+    {
+        await mediator.Send(new ResetPasswordCommand(request.Email, request.Token, request.NewPassword, request.ConfirmPassword), ct);
+        return Ok(new { Message = "Password has been reset successfully." });
+    }
+
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken ct)
     {

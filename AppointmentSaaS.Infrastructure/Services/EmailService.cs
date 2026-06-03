@@ -22,4 +22,16 @@ public class EmailService(ILogger<EmailService> logger) : IEmailService
         logger.LogInformation("Sending welcome email to {Email}", toEmail);
         return Task.CompletedTask;
     }
+
+    public Task SendEmailVerificationAsync(string toEmail, string name, string verificationToken, CancellationToken ct = default)
+    {
+        logger.LogInformation("Sending email verification to {Email} for {Name}", toEmail, name);
+        return Task.CompletedTask;
+    }
+
+    public Task SendPasswordResetAsync(string toEmail, string name, string resetToken, CancellationToken ct = default)
+    {
+        logger.LogInformation("Sending password reset email to {Email}", toEmail);
+        return Task.CompletedTask;
+    }
 }

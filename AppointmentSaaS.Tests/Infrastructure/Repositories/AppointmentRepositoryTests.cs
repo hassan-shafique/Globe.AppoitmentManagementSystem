@@ -3,8 +3,7 @@ using AppointmentSaaS.Infrastructure.Data;
 using AppointmentSaaS.Infrastructure.Identity;
 using AppointmentSaaS.Infrastructure.Repositories;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AppointmentSaaS.Tests.Infrastructure.Repositories;
@@ -20,7 +19,7 @@ public class AppointmentRepositoryTests : IDisposable
         var services = new ServiceCollection();
         services.AddDbContext<AppDbContext>(o =>
             o.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-        services.AddIdentity<ApplicationIdentityUser, IdentityRole>()
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<AppDbContext>();
         services.AddLogging();
 

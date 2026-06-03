@@ -17,3 +17,4 @@ Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Infrastructure\ob
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Infrastructure\obj\Debug\net9.0\AppointmentSaaS.Infrastructure.pdb
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Infrastructure\obj\Debug\net9.0\AppointmentSaaS.Infrastructure.genruntimeconfig.cache
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Infrastructure\obj\Debug\net9.0\ref\AppointmentSaaS.Infrastructure.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Infrastructure\obj\Debug\net9.0\AppointmentSaaS.Infrastructure.sourcelink.json

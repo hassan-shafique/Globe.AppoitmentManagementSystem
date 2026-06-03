@@ -9,8 +9,8 @@ namespace AppointmentSaaS.Infrastructure.Data.Seed;
 
 public class DataSeeder(
     AppDbContext context,
-    UserManager<ApplicationIdentityUser> userManager,
-    RoleManager<IdentityRole> roleManager,
+    UserManager<ApplicationUser> userManager,
+    RoleManager<ApplicationRole> roleManager,
     ILogger<DataSeeder> logger)
 {
     public async Task SeedAsync()
@@ -30,12 +30,12 @@ public class DataSeeder(
 
     private async Task SeedRolesAsync()
     {
-        foreach (var role in Enum.GetNames<UserRole>())
+        foreach (var roleName in Enum.GetNames<UserRole>())
         {
-            if (!await roleManager.RoleExistsAsync(role))
+            if (!await roleManager.RoleExistsAsync(roleName))
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
-                logger.LogInformation("Created role: {Role}", role);
+                await roleManager.CreateAsync(new ApplicationRole(roleName));
+                logger.LogInformation("Created role: {Role}", roleName);
             }
         }
     }
@@ -48,7 +48,7 @@ public class DataSeeder(
         context.Tenants.Add(tenant);
         await context.SaveChangesAsync();
 
-        var adminUser = new ApplicationIdentityUser
+        var adminUser = new ApplicationUser
         {
             UserName = "admin@globe.com",
             Email = "admin@globe.com",

@@ -262,3 +262,4 @@ Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\obj\Debug\net
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\obj\Debug\net9.0\AppointmentSaaS.Web.genruntimeconfig.cache
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\obj\Debug\net9.0\ref\AppointmentSaaS.Web.dll
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\bin\Debug\net9.0\FluentValidation.DependencyInjectionExtensions.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Web\obj\Debug\net9.0\AppointmentSaaS.Web.sourcelink.json

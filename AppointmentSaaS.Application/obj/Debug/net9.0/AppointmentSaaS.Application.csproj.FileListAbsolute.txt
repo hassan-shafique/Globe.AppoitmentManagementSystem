@@ -13,3 +13,4 @@ Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\D
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\refint\AppointmentSaaS.Application.dll
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.pdb
 Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\ref\AppointmentSaaS.Application.dll
+Z:\New folder\Globe.AppoitmentManagementSystem\AppointmentSaaS.Application\obj\Debug\net9.0\AppointmentSaaS.Application.sourcelink.json
