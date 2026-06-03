@@ -17,5 +17,6 @@ public class StaffConfiguration : IEntityTypeConfiguration<Staff>
         builder.Property(s => s.IdentityUserId).IsRequired().HasMaxLength(450);
 
         builder.HasOne(s => s.Tenant).WithMany(t => t.Staff).HasForeignKey(s => s.TenantId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(s => s.Business).WithMany(b => b.Staff).HasForeignKey(s => s.BusinessId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
     }
 }

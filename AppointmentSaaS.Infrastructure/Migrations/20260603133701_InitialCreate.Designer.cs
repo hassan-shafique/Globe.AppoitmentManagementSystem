@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentSaaS.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260603130046_InitialCreate")]
+    [Migration("20260603133701_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -32,6 +32,12 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -48,6 +54,9 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
@@ -87,17 +96,23 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("BusinessId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CancellationReason")
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ClientId")
+                    b.Property<Guid?>("ClientId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CustomerId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("EndTime")
@@ -130,7 +145,11 @@ namespace AppointmentSaaS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusinessId");
+
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("ServiceId");
 
@@ -139,6 +158,137 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     b.HasIndex("StaffId", "StartTime", "EndTime");
 
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Business", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Businesses");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("AppUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "Email");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.RefreshToken", b =>
@@ -188,10 +338,19 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("BusinessId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -202,6 +361,9 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -224,6 +386,8 @@ namespace AppointmentSaaS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusinessId");
+
                     b.HasIndex("TenantId");
 
                     b.ToTable("Services");
@@ -239,10 +403,19 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("BusinessId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -261,6 +434,9 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
@@ -283,9 +459,66 @@ namespace AppointmentSaaS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusinessId");
+
                     b.HasIndex("TenantId");
 
                     b.ToTable("Staff");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.SubscriptionPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("AnnualPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("MaxAppointmentsPerMonth")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("MaxBusinessLocations")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("MaxStaffMembers")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("MonthlyPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("SubscriptionPlans");
                 });
 
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Tenant", b =>
@@ -308,7 +541,16 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LogoUrl")
@@ -325,6 +567,9 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("SubscriptionPlanId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -335,6 +580,8 @@ namespace AppointmentSaaS.Infrastructure.Migrations
 
                     b.HasIndex("Slug")
                         .IsUnique();
+
+                    b.HasIndex("SubscriptionPlanId");
 
                     b.ToTable("Tenants");
                 });
@@ -550,11 +797,20 @@ namespace AppointmentSaaS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Appointment", b =>
                 {
+                    b.HasOne("AppointmentSaaS.Domain.Entities.Business", "Business")
+                        .WithMany("Appointments")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AppointmentSaaS.Domain.Entities.AppUser", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AppointmentSaaS.Domain.Entities.Customer", "Customer")
+                        .WithMany("Appointments")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppointmentSaaS.Domain.Entities.Service", "Service")
                         .WithMany("Appointments")
@@ -574,11 +830,44 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Business");
+
                     b.Navigation("Client");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("Service");
 
                     b.Navigation("Staff");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Business", b =>
+                {
+                    b.HasOne("AppointmentSaaS.Domain.Entities.Tenant", "Tenant")
+                        .WithMany("Businesses")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Customer", b =>
+                {
+                    b.HasOne("AppointmentSaaS.Domain.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AppointmentSaaS.Domain.Entities.Tenant", "Tenant")
+                        .WithMany("Customers")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("Tenant");
                 });
@@ -596,24 +885,48 @@ namespace AppointmentSaaS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Service", b =>
                 {
+                    b.HasOne("AppointmentSaaS.Domain.Entities.Business", "Business")
+                        .WithMany("Services")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("AppointmentSaaS.Domain.Entities.Tenant", "Tenant")
                         .WithMany("Services")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Business");
+
                     b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Staff", b =>
                 {
+                    b.HasOne("AppointmentSaaS.Domain.Entities.Business", "Business")
+                        .WithMany("Staff")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("AppointmentSaaS.Domain.Entities.Tenant", "Tenant")
                         .WithMany("Staff")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Business");
+
                     b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Tenant", b =>
+                {
+                    b.HasOne("AppointmentSaaS.Domain.Entities.SubscriptionPlan", "SubscriptionPlan")
+                        .WithMany("Tenants")
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SubscriptionPlan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -672,6 +985,20 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     b.Navigation("RefreshTokens");
                 });
 
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Business", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("Services");
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Customer", b =>
+                {
+                    b.Navigation("Appointments");
+                });
+
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Service", b =>
                 {
                     b.Navigation("Appointments");
@@ -682,9 +1009,18 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     b.Navigation("Appointments");
                 });
 
+            modelBuilder.Entity("AppointmentSaaS.Domain.Entities.SubscriptionPlan", b =>
+                {
+                    b.Navigation("Tenants");
+                });
+
             modelBuilder.Entity("AppointmentSaaS.Domain.Entities.Tenant", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Businesses");
+
+                    b.Navigation("Customers");
 
                     b.Navigation("Services");
 

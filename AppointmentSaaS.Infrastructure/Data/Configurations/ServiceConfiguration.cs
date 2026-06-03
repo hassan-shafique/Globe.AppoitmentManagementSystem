@@ -14,5 +14,6 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Service>
         builder.Property(s => s.Price).HasPrecision(18, 2);
 
         builder.HasOne(s => s.Tenant).WithMany(t => t.Services).HasForeignKey(s => s.TenantId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(s => s.Business).WithMany(b => b.Services).HasForeignKey(s => s.BusinessId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
     }
 }

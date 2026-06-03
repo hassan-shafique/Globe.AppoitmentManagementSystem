@@ -15,6 +15,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Service> Services => Set<Service>();
     public DbSet<Staff> Staff => Set<Staff>();
+    public DbSet<Business> Businesses => Set<Business>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -22,6 +25,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         base.OnModelCreating(builder);
         builder.Ignore<DomainEvent>();
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Global soft-delete filters — deleted rows are invisible to all normal queries
+        builder.Entity<Tenant>().HasQueryFilter(e => !e.IsDeleted);
+        builder.Entity<AppUser>().HasQueryFilter(e => !e.IsDeleted);
+        builder.Entity<Business>().HasQueryFilter(e => !e.IsDeleted);
+        builder.Entity<Staff>().HasQueryFilter(e => !e.IsDeleted);
+        builder.Entity<Service>().HasQueryFilter(e => !e.IsDeleted);
+        builder.Entity<Customer>().HasQueryFilter(e => !e.IsDeleted);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)

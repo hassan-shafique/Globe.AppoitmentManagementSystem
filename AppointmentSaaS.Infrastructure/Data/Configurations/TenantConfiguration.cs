@@ -15,5 +15,11 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.Property(t => t.ContactEmail).HasMaxLength(256);
         builder.Property(t => t.ContactPhone).HasMaxLength(50);
         builder.Property(t => t.LogoUrl).HasMaxLength(500);
+
+        builder.HasOne(t => t.SubscriptionPlan)
+            .WithMany(p => p.Tenants)
+            .HasForeignKey(t => t.SubscriptionPlanId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

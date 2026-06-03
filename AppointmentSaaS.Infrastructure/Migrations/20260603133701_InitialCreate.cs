@@ -53,15 +53,17 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tenants",
+                name: "SubscriptionPlans",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Slug = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    LogoUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
-                    ContactEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ContactPhone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    MonthlyPrice = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    AnnualPrice = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    MaxStaffMembers = table.Column<int>(type: "INTEGER", nullable: true),
+                    MaxAppointmentsPerMonth = table.Column<int>(type: "INTEGER", nullable: true),
+                    MaxBusinessLocations = table.Column<int>(type: "INTEGER", nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
@@ -70,7 +72,7 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                    table.PrimaryKey("PK_SubscriptionPlans", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,6 +182,37 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tenants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    LogoUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    ContactEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    ContactPhone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    SubscriptionPlanId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tenants_SubscriptionPlans_SubscriptionPlanId",
+                        column: x => x.SubscriptionPlanId,
+                        principalTable: "SubscriptionPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AppUsers",
                 columns: table => new
                 {
@@ -195,7 +228,10 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true)
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -209,26 +245,30 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Services",
+                name: "Businesses",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     TenantId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
-                    DurationMinutes = table.Column<int>(type: "INTEGER", nullable: false),
-                    Price = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    Address = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    City = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Phone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true)
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Services", x => x.Id);
+                    table.PrimaryKey("PK_Businesses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Services_Tenants_TenantId",
+                        name: "FK_Businesses_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
@@ -236,28 +276,37 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Staff",
+                name: "Customers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     TenantId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IdentityUserId = table.Column<string>(type: "TEXT", maxLength: 450, nullable: false),
+                    AppUserId = table.Column<Guid>(type: "TEXT", nullable: true),
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Phone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    Bio = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
+                    Notes = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true)
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Staff", x => x.Id);
+                    table.PrimaryKey("PK_Customers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Staff_Tenants_TenantId",
+                        name: "FK_Customers_AppUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Customers_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
@@ -289,6 +338,82 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Services",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TenantId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    BusinessId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    DurationMinutes = table.Column<int>(type: "INTEGER", nullable: false),
+                    Price = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Services_Businesses_BusinessId",
+                        column: x => x.BusinessId,
+                        principalTable: "Businesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Services_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Staff",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TenantId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    IdentityUserId = table.Column<string>(type: "TEXT", maxLength: 450, nullable: false),
+                    BusinessId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Phone = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    Bio = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Staff", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Staff_Businesses_BusinessId",
+                        column: x => x.BusinessId,
+                        principalTable: "Businesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Staff_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointments",
                 columns: table => new
                 {
@@ -296,7 +421,9 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                     TenantId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ServiceId = table.Column<Guid>(type: "TEXT", nullable: false),
                     StaffId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ClientId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ClientId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    CustomerId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    BusinessId = table.Column<Guid>(type: "TEXT", nullable: true),
                     StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     EndTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
@@ -314,6 +441,18 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                         name: "FK_Appointments_AppUsers_ClientId",
                         column: x => x.ClientId,
                         principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Businesses_BusinessId",
+                        column: x => x.BusinessId,
+                        principalTable: "Businesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -337,9 +476,19 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointments_BusinessId",
+                table: "Appointments",
+                column: "BusinessId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Appointments_ClientId",
                 table: "Appointments",
                 column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_CustomerId",
+                table: "Appointments",
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_ServiceId",
@@ -405,6 +554,26 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Businesses_TenantId",
+                table: "Businesses",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_AppUserId",
+                table: "Customers",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_TenantId",
+                table: "Customers",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_TenantId_Email",
+                table: "Customers",
+                columns: new[] { "TenantId", "Email" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_AppUserId",
                 table: "RefreshTokens",
                 column: "AppUserId");
@@ -416,9 +585,19 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Services_BusinessId",
+                table: "Services",
+                column: "BusinessId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Services_TenantId",
                 table: "Services",
                 column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Staff_BusinessId",
+                table: "Staff",
+                column: "BusinessId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Staff_TenantId",
@@ -426,10 +605,21 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionPlans_Name",
+                table: "SubscriptionPlans",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tenants_Slug",
                 table: "Tenants",
                 column: "Slug",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenants_SubscriptionPlanId",
+                table: "Tenants",
+                column: "SubscriptionPlanId");
         }
 
         /// <inheritdoc />
@@ -457,6 +647,9 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
@@ -472,7 +665,13 @@ namespace AppointmentSaaS.Infrastructure.Migrations
                 name: "AppUsers");
 
             migrationBuilder.DropTable(
+                name: "Businesses");
+
+            migrationBuilder.DropTable(
                 name: "Tenants");
+
+            migrationBuilder.DropTable(
+                name: "SubscriptionPlans");
         }
     }
 }

@@ -35,11 +35,11 @@ A production-ready multi-tenant Appointment Management SaaS built with ASP.NET C
 AppointmentSaaS/
 ├── AppointmentSaaS.Domain/          # Entities, Enums, Events, Interfaces
 │   ├── Common/                      # BaseEntity, ValueObject, IAuditableEntity
-│   ├── Entities/                    # Tenant, AppUser, Appointment, Service, Staff, RefreshToken
+│   ├── Entities/                    # Tenant, AppUser, Appointment, Service, Staff, Business, Customer, SubscriptionPlan, RefreshToken
 │   ├── Enums/                       # AppointmentStatus, UserRole
 │   ├── Events/                      # DomainEvent, AppointmentCreatedEvent, AppointmentCancelledEvent
 │   ├── Exceptions/                  # DomainException, AppointmentConflictException
-│   └── Interfaces/                  # IRepository<T>, IUnitOfWork, IAppointmentRepository, ITenantRepository
+│   └── Interfaces/                  # IRepository<T>, IUnitOfWork, IAppointmentRepository, ITenantRepository, IBusinessRepository, ICustomerRepository, IStaffRepository, IServiceRepository
 │
 ├── AppointmentSaaS.Application/     # Use Cases (CQRS)
 │   ├── Common/                      # Behaviours, Exceptions, Interfaces, Mappings
@@ -47,9 +47,9 @@ AppointmentSaaS/
 │   └── Features/                    # Auth, Appointments, Tenants, Services Commands & Queries
 │
 ├── AppointmentSaaS.Infrastructure/  # Data Access & External Services
-│   ├── Data/                        # AppDbContext, EF Configurations, Seeder
+│   ├── Data/                        # AppDbContext, EF Configurations (9 entities), Seeder
 │   ├── Identity/                    # ApplicationIdentityUser
-│   ├── Repositories/                # Repository<T>, AppointmentRepository, TenantRepository, UnitOfWork
+│   ├── Repositories/                # Repository<T>, AppointmentRepository, TenantRepository, BusinessRepository, CustomerRepository, StaffRepository, ServiceRepository, UnitOfWork
 │   └── Services/                    # TokenService, CurrentUserService, EmailService
 │
 ├── AppointmentSaaS.Web/             # Presentation Layer
