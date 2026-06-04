@@ -35,6 +35,36 @@ RequireNonAlphanumeric=true, RequiredLength=8,
 RequireUniqueEmail=true, RequireConfirmedEmail=true
 ```
 
+## Multi-Tenancy
+
+Shared SQLite database with `TenantId` on all business data and global EF Core query filters enforcing row-level isolation per request.
+
+### Tenant-scoped entities
+`AppUser`, `Business`, `Staff`, `Service`, `Customer`, `Appointment` — all carry a non-nullable `TenantId` FK to the `Tenants` table.
+
+### Tenant resolution
+`TenantResolver` (implements `ITenantProvider`) resolves the current tenant per request:
+1. JWT claim `tenantId` — set at login, most requests
+2. `X-Tenant-Id` header — machine-to-machine / unauthenticated public routes
+3. `null` — super-admin or background service (query filter bypassed)
+
+### Global query filters (`AppDbContext.OnModelCreating`)
+Entities with soft-delete + tenant isolation:
+```csharp
+HasQueryFilter(e => !e.IsDeleted && (tenantId == null || e.TenantId == tenantId))
+```
+`Appointment` (no soft-delete):
+```csharp
+HasQueryFilter(e => tenantId == null || e.TenantId == tenantId)
+```
+`Tenant` table: soft-delete only (it IS the root tenant record).
+
+### Bypassing filters
+Use `dbContext.Set<T>().IgnoreQueryFilters()` for cross-tenant admin queries.
+
+### Migrations
+- `AddTenantQueryFilters` (2026-06-04) — checkpoint; no schema change (filters are code-only).
+
 ## Key Interfaces
 
 | Interface | Impl | Notes |
@@ -43,6 +73,7 @@ RequireUniqueEmail=true, RequireConfirmedEmail=true
 | `IEmailService` | `EmailService` | Log-only stub — replace with real provider |
 | `ITokenService` | `TokenService` | JWT + refresh token generation |
 | `ICurrentUserService` | `CurrentUserService` | Extracts user from `HttpContext` |
+| `ITenantProvider` | `TenantResolver` | Current tenant ID for query filtering |
 
 ## Database
 
@@ -50,6 +81,7 @@ RequireUniqueEmail=true, RequireConfirmedEmail=true
 - **Migrations:** `AppointmentSaaS.Infrastructure/Migrations/`
   - `InitialCreate` — full schema including Identity tables
   - `AddApplicationRoleAndIdentityV2` — adds `Description` column to `AspNetRoles`
+  - `AddTenantQueryFilters` — checkpoint migration (no schema change)
 - **Seeding:** `DataSeeder` seeds roles + default admin (`admin@globe.com` / `Admin@123!`)
 
 ### Adding a migration
@@ -67,7 +99,7 @@ dotnet test AppointmentSaaS.Tests/
 
 ## Architecture Notes
 
-- **Soft delete** — global EF query filters on all tenant-scoped entities
+- **Soft delete + tenant isolation** — combined EF global query filters; soft-delete on 5 entities, tenant filter on 6 (including Appointment)
 - **Multi-tenancy** — `TenantId` FK + JWT claims; login scoped to `TenantSlug`
 - **CQRS** — MediatR commands/queries with `ValidationBehaviour` + `LoggingBehaviour`
 - **Domain events** — `AppointmentCreatedEvent`, `AppointmentCancelledEvent` on aggregate root

@@ -1,3 +1,4 @@
+using AppointmentSaaS.Application.Common.Interfaces;
 using AppointmentSaaS.Domain.Common;
 using AppointmentSaaS.Domain.Entities;
 using AppointmentSaaS.Domain.Events;
@@ -8,7 +9,8 @@ using System.Reflection;
 
 namespace AppointmentSaaS.Infrastructure.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantProvider tenantProvider)
+    : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 {
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<AppUser> AppUsers => Set<AppUser>();
@@ -26,13 +28,29 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         builder.Ignore<DomainEvent>();
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        // Global soft-delete filters — deleted rows are invisible to all normal queries
+        // Soft-delete + tenant isolation filters.
+        // tenantProvider.TenantId == null bypasses the tenant filter (super-admin / background jobs).
+        builder.Entity<AppUser>().HasQueryFilter(e =>
+            !e.IsDeleted && (tenantProvider.TenantId == null || e.TenantId == tenantProvider.TenantId));
+
+        builder.Entity<Business>().HasQueryFilter(e =>
+            !e.IsDeleted && (tenantProvider.TenantId == null || e.TenantId == tenantProvider.TenantId));
+
+        builder.Entity<Staff>().HasQueryFilter(e =>
+            !e.IsDeleted && (tenantProvider.TenantId == null || e.TenantId == tenantProvider.TenantId));
+
+        builder.Entity<Service>().HasQueryFilter(e =>
+            !e.IsDeleted && (tenantProvider.TenantId == null || e.TenantId == tenantProvider.TenantId));
+
+        builder.Entity<Customer>().HasQueryFilter(e =>
+            !e.IsDeleted && (tenantProvider.TenantId == null || e.TenantId == tenantProvider.TenantId));
+
+        // Appointment uses AuditableEntity (no soft-delete), tenant filter only
+        builder.Entity<Appointment>().HasQueryFilter(e =>
+            tenantProvider.TenantId == null || e.TenantId == tenantProvider.TenantId);
+
+        // Tenant table: soft-delete only — never filtered by TenantId (it IS the tenant)
         builder.Entity<Tenant>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<AppUser>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<Business>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<Staff>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<Service>().HasQueryFilter(e => !e.IsDeleted);
-        builder.Entity<Customer>().HasQueryFilter(e => !e.IsDeleted);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
@@ -47,4 +65,3 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         return await base.SaveChangesAsync(ct);
     }
 }
-

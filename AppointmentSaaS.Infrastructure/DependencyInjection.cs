@@ -71,6 +71,7 @@ public static class DependencyInjection
             };
         });
 
+        services.AddScoped<ITenantProvider, TenantResolver>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddScoped<ITenantRepository, TenantRepository>();
