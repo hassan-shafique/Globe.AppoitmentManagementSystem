@@ -1,4 +1,5 @@
 using AppointmentSaaS.Domain.Common;
+using AppointmentSaaS.Domain.Enums;
 
 namespace AppointmentSaaS.Domain.Entities;
 
@@ -17,6 +18,9 @@ public class Business : SoftDeleteEntity
 
     /// <summary>Human-readable name for this location (e.g., "Downtown Branch").</summary>
     public string Name { get; private set; } = string.Empty;
+
+    /// <summary>The type of business (e.g., Doctor, Salon, Consultant).</summary>
+    public BusinessType Type { get; private set; } = BusinessType.Generic;
 
     /// <summary>Optional street address.</summary>
     public string? Address { get; private set; }
@@ -55,15 +59,10 @@ public class Business : SoftDeleteEntity
     /// <summary>
     /// Creates a new <see cref="Business"/> location for the specified tenant.
     /// </summary>
-    /// <param name="tenantId">Id of the parent tenant.</param>
-    /// <param name="name">Display name for the location. Must not be empty.</param>
-    /// <param name="address">Optional street address.</param>
-    /// <param name="city">Optional city name.</param>
-    /// <param name="phone">Optional contact phone.</param>
-    /// <param name="email">Optional contact email.</param>
     public static Business Create(
         Guid tenantId,
         string name,
+        BusinessType type = BusinessType.Generic,
         string? address = null,
         string? city = null,
         string? phone = null,
@@ -74,6 +73,7 @@ public class Business : SoftDeleteEntity
         {
             TenantId = tenantId,
             Name = name,
+            Type = type,
             Address = address,
             City = city,
             Phone = phone,
@@ -81,11 +81,12 @@ public class Business : SoftDeleteEntity
         };
     }
 
-    /// <summary>Updates mutable properties. Sets <see cref="AuditableEntity.UpdatedAt"/>.</summary>
-    public void Update(string name, string? address, string? city, string? phone, string? email)
+    /// <summary>Updates mutable properties.</summary>
+    public void Update(string name, BusinessType type, string? address, string? city, string? phone, string? email)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         Name = name;
+        Type = type;
         Address = address;
         City = city;
         Phone = phone;

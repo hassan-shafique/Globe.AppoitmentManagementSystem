@@ -91,11 +91,56 @@ dotnet ef migrations add <MigrationName> \
   --startup-project AppointmentSaaS.Web
 ```
 
+## Business Management Module
+
+### Business Types (`AppointmentSaaS.Domain/Enums/BusinessType.cs`)
+`Generic`, `Doctor`, `Dentist`, `Teacher`, `Tutor`, `Salon`, `Consultant`
+
+### Business entity (`AppointmentSaaS.Domain/Entities/Business.cs`)
+- Inherits `SoftDeleteEntity`; scoped to a `Tenant` via `TenantId`
+- Factory: `Business.Create(tenantId, name, type, address?, city?, phone?, email?)`
+- Methods: `Update(...)`, `Activate()`, `Deactivate()`, `SoftDelete()`, `Restore()`
+
+### CQRS (`AppointmentSaaS.Application/Features/Businesses/`)
+| Command/Query | Returns |
+|---|---|
+| `CreateBusinessCommand` | `BusinessDto` |
+| `UpdateBusinessCommand` | `BusinessDto` |
+| `DeleteBusinessCommand` | void (soft-delete) |
+| `ActivateBusinessCommand` | void |
+| `DeactivateBusinessCommand` | void |
+| `GetBusinessByIdQuery` | `BusinessDto` |
+| `GetBusinessesByTenantQuery` | `IReadOnlyList<BusinessDto>` |
+| `GetActiveBusinessesByTenantQuery` | `IReadOnlyList<BusinessDto>` |
+
+### API endpoints (`/api/businesses`)
+| Method | Route | Roles |
+|---|---|---|
+| GET | `/api/businesses` | Authenticated |
+| GET | `/api/businesses/active` | Authenticated |
+| GET | `/api/businesses/{id}` | Authenticated |
+| POST | `/api/businesses` | TenantAdmin, SuperAdmin |
+| PUT | `/api/businesses/{id}` | TenantAdmin, SuperAdmin |
+| DELETE | `/api/businesses/{id}` | TenantAdmin, SuperAdmin |
+| PATCH | `/api/businesses/{id}/activate` | TenantAdmin, SuperAdmin |
+| PATCH | `/api/businesses/{id}/deactivate` | TenantAdmin, SuperAdmin |
+
+### Razor Pages (`/Businesses/`)
+`Index`, `Create`, `Edit`, `Details`
+
+### Migration needed
+`BusinessType` column was added to `Businesses` table. Run:
+```bash
+dotnet ef migrations add AddBusinessType \
+  --project AppointmentSaaS.Infrastructure \
+  --startup-project AppointmentSaaS.Web
+```
+
 ## Running Tests
 ```bash
 dotnet test AppointmentSaaS.Tests/
 ```
-40 tests — Domain, Application (Auth, Appointments), Infrastructure (Repositories).
+~57 tests — Domain (Appointment, Business), Application (Auth, Appointments, Businesses), Infrastructure (Repositories).
 
 ## Architecture Notes
 

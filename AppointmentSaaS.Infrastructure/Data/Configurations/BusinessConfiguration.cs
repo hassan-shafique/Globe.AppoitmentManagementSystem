@@ -10,6 +10,7 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
     {
         builder.HasKey(b => b.Id);
         builder.Property(b => b.Name).IsRequired().HasMaxLength(200);
+        builder.Property(b => b.Type).IsRequired();
         builder.Property(b => b.Address).HasMaxLength(500);
         builder.Property(b => b.City).HasMaxLength(100);
         builder.Property(b => b.Phone).HasMaxLength(50);

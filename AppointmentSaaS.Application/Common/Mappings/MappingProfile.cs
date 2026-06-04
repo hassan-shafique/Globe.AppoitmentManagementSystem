@@ -1,4 +1,5 @@
 using AppointmentSaaS.Application.DTOs.Appointments;
+using AppointmentSaaS.Application.DTOs.Businesses;
 using AppointmentSaaS.Application.DTOs.Services;
 using AppointmentSaaS.Application.DTOs.Staff;
 using AppointmentSaaS.Application.DTOs.Tenants;
@@ -12,6 +13,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Tenant, TenantDto>();
+        CreateMap<Business, BusinessDto>();
         CreateMap<Service, ServiceDto>();
         CreateMap<Staff, StaffDto>();
         CreateMap<Appointment, AppointmentDto>()

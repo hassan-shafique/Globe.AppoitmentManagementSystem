@@ -63,8 +63,12 @@ public class DataSeeder(
             await userManager.AddToRoleAsync(adminUser, UserRole.TenantAdmin.ToString());
             var appUser = AppUser.Create(adminUser.Id, tenant.Id, "Admin", "User", "admin@globe.com", UserRole.TenantAdmin);
             context.AppUsers.Add(appUser);
+
+            var staffRecord = Staff.Create(tenant.Id, adminUser.Id, "Admin", "Staff", "admin@globe.com");
+            context.Set<Staff>().Add(staffRecord);
+
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded default tenant and admin user");
+            logger.LogInformation("Seeded default tenant, admin user, and staff record (Staff.Id={StaffId})", staffRecord.Id);
         }
     }
 }

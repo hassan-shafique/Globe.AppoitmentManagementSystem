@@ -9,7 +9,7 @@ public record AppointmentDto(
     string ServiceName,
     Guid StaffId,
     string StaffName,
-    Guid ClientId,
+    Guid? ClientId,
     string ClientName,
     DateTime StartTime,
     DateTime EndTime,

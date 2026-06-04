@@ -1,0 +1,156 @@
+# ============================================================
+# Globe AMS — 02. Tenant Management
+# ============================================================
+# POST /api/tenants requires SuperAdmin role.
+# The seeded admin (admin@globe.com) is TenantAdmin — NOT SuperAdmin.
+#
+# HOW TO GET A SUPERADMIN TOKEN (one-time setup):
+# ─────────────────────────────────────────────────
+# Option A — SQLite (fastest):
+#   1. Open AppointmentSaaS-dev.db with DB Browser for SQLite or similar.
+#   2. Run:
+#        UPDATE AspNetUserRoles
+#        SET RoleId = (SELECT Id FROM AspNetRoles WHERE NormalizedName = 'SUPERADMIN')
+#        WHERE UserId = (SELECT Id FROM AspNetUsers WHERE NormalizedEmail = 'ADMIN@GLOBE.COM');
+#        UPDATE AppUsers SET Role = 0  -- SuperAdmin enum value
+#        WHERE Email = 'admin@globe.com';
+#   3. Re-login via 01_admin-auth.http to get a fresh JWT with SuperAdmin claim.
+#
+# Option B — Modify DataSeeder.cs:
+#   Change UserRole.TenantAdmin → UserRole.SuperAdmin in DataSeeder.SeedDefaultTenantAsync()
+#   and re-run the app (drops & re-creates dev DB).
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+# Paste SuperAdmin JWT after performing the setup above:
+@superAdminToken = PASTE_SUPER_ADMIN_JWT_HERE
+
+### ─────────────────────────────────────────────────────────
+### 1. Get Globe tenant by slug (no auth required)
+### ─────────────────────────────────────────────────────────
+# @name getTenantGlobe
+GET {{baseUrl}}/api/tenants/globe
+
+###
+# ✅ Expected 200:
+# {
+#   "id": "<globe-guid>",
+#   "name": "Globe Appointments",
+#   "slug": "globe",
+#   "contactEmail": "admin@globe.com",
+#   "isActive": true
+# }
+
+### ─────────────────────────────────────────────────────────
+### 2. Get non-existent tenant (expect 404)
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/tenants/does-not-exist
+
+###
+# ❌ Expected 404 Not Found
+
+### ─────────────────────────────────────────────────────────
+### 3. Create Tenant Alpha Clinic (requires SuperAdmin)
+### ─────────────────────────────────────────────────────────
+# @name createTenantAlpha
+POST {{baseUrl}}/api/tenants
+Content-Type: application/json
+Authorization: Bearer {{superAdminToken}}
+
+{
+  "name": "Alpha Clinic",
+  "slug": "alpha-clinic",
+  "contactEmail": "contact@alphaclinic.com"
+}
+
+###
+# ✅ Expected 201:
+# {
+#   "id": "<alpha-guid>",   ← copy to @alphaTenantId in later files
+#   "name": "Alpha Clinic",
+#   "slug": "alpha-clinic",
+#   "contactEmail": "contact@alphaclinic.com"
+# }
+
+### ─────────────────────────────────────────────────────────
+### 4. Create Tenant Beta Spa (requires SuperAdmin)
+### ─────────────────────────────────────────────────────────
+# @name createTenantBeta
+POST {{baseUrl}}/api/tenants
+Content-Type: application/json
+Authorization: Bearer {{superAdminToken}}
+
+{
+  "name": "Beta Spa",
+  "slug": "beta-spa",
+  "contactEmail": "contact@betaspa.com"
+}
+
+###
+# ✅ Expected 201:
+# {
+#   "id": "<beta-guid>",  ← copy to @betaTenantId in later files
+#   "name": "Beta Spa",
+#   "slug": "beta-spa"
+# }
+
+### ─────────────────────────────────────────────────────────
+### 5. Verify Alpha tenant exists by slug
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/tenants/alpha-clinic
+
+### ─────────────────────────────────────────────────────────
+### 6. Verify Beta tenant exists by slug
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/tenants/beta-spa
+
+### ─────────────────────────────────────────────────────────
+### 7. Create tenant with duplicate slug (expect 400/409)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/tenants
+Content-Type: application/json
+Authorization: Bearer {{superAdminToken}}
+
+{
+  "name": "Globe Duplicate",
+  "slug": "globe",
+  "contactEmail": "dup@test.com"
+}
+
+###
+# ❌ Expected 400 or 409 — "globe" slug already exists (unique constraint)
+
+### ─────────────────────────────────────────────────────────
+### 8. Create tenant without auth (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/tenants
+Content-Type: application/json
+
+{
+  "name": "No Auth Tenant",
+  "slug": "no-auth",
+  "contactEmail": "noauth@test.com"
+}
+
+###
+# ❌ Expected 401 Unauthorized
+
+### ─────────────────────────────────────────────────────────
+### 9. Create tenant with TenantAdmin token (expect 403)
+### ─────────────────────────────────────────────────────────
+# Paste the globe TenantAdmin token from 01_admin-auth.http:
+@globeAdminToken = PASTE_GLOBE_TENANT_ADMIN_JWT_HERE
+
+POST {{baseUrl}}/api/tenants
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "name": "Unauthorized Tenant",
+  "slug": "unauthorized",
+  "contactEmail": "unauth@test.com"
+}
+
+###
+# ❌ Expected 403 Forbidden — only SuperAdmin can create tenants

@@ -1,0 +1,201 @@
+# ============================================================
+# Globe AMS — 07. Token Management
+# ============================================================
+# Refresh token rotation, revocation, forgot-password flow,
+# and logout (cookie clearing).
+#
+# The access token is short-lived (120 min in dev, 60 min in prod).
+# Refresh tokens are single-use (rotation) and expire in 7 days.
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+# Paste from 01_admin-auth.http login response:
+@accessToken  = PASTE_ACCESS_JWT_HERE
+@refreshToken = PASTE_REFRESH_TOKEN_HERE
+
+### ─────────────────────────────────────────────────────────
+### 1. Refresh access token (happy path)
+### ─────────────────────────────────────────────────────────
+# @name refreshResult
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+# ✅ Expected 200 — new accessToken + new refreshToken
+# Old refreshToken is invalidated (rotation policy).
+# New HTTP-only cookie is also set if cookie auth is used.
+
+### ─────────────────────────────────────────────────────────
+### 2. Reuse the OLD refresh token after rotation (expect 401)
+### ─────────────────────────────────────────────────────────
+# The refresh token from step 0 was consumed in step 1.
+# Using it again must be rejected (prevents replay attacks).
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+# ❌ Expected 400 Bad Request — refresh token already used (revoked/replaced by rotation)
+
+### ─────────────────────────────────────────────────────────
+### 3. Refresh with invalid/garbage token (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "refreshToken": "completely-invalid-token-garbage"
+}
+
+###
+# ❌ Expected 401 Unauthorized
+
+### ─────────────────────────────────────────────────────────
+### 4. Revoke a specific refresh token (requires auth)
+### ─────────────────────────────────────────────────────────
+# Use the new tokens obtained from step 1 (refreshResult):
+@newAccessToken  = PASTE_NEW_ACCESS_TOKEN_FROM_STEP_1
+@newRefreshToken = PASTE_NEW_REFRESH_TOKEN_FROM_STEP_1
+
+POST {{baseUrl}}/api/auth/revoke
+Content-Type: application/json
+Authorization: Bearer {{newAccessToken}}
+
+"{{newRefreshToken}}"
+
+###
+# ✅ Expected 204 — token revoked
+# Note: body is a raw JSON string (not an object), matching [FromBody] string token
+
+### ─────────────────────────────────────────────────────────
+### 5. Attempt to use the revoked refresh token (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "{{newAccessToken}}",
+  "refreshToken": "{{newRefreshToken}}"
+}
+
+###
+# ❌ Expected 400 Bad Request — token was explicitly revoked in step 4
+
+### ─────────────────────────────────────────────────────────
+### 6. Revoke without auth (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/revoke
+Content-Type: application/json
+
+"some-refresh-token"
+
+###
+# ❌ Expected 401 Unauthorized — [Authorize] required
+
+### ─────────────────────────────────────────────────────────
+### 7. Forgot password — existing email (anti-enumeration)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com"
+}
+
+###
+# ✅ Expected 200 OK
+# Check console logs for the reset token printed by the email stub:
+#   [Email] To: admin@globe.com | Subject: Reset Your Password
+#   Body: ...?token=<URL_ENCODED_TOKEN>&email=...
+
+### ─────────────────────────────────────────────────────────
+### 8. Forgot password — non-existent email (anti-enumeration: always 200)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "doesnotexist@ghost.com"
+}
+
+###
+# ✅ Expected 200 — same response regardless of email existence
+# ✓ Cannot enumerate registered emails through this endpoint
+
+### ─────────────────────────────────────────────────────────
+### 9. Reset password (use token from step 7 console logs)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "token": "PASTE_RESET_TOKEN_FROM_CONSOLE_LOGS",
+  "newPassword": "NewAdmin@456!",
+  "confirmPassword": "NewAdmin@456!"
+}
+
+###
+# ✅ Expected 200 — password changed
+
+### ─────────────────────────────────────────────────────────
+### 10. Login with new password to confirm reset worked
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "password": "NewAdmin@456!",
+  "tenantSlug": "globe"
+}
+
+###
+# ✅ Expected 200 — login succeeds with new password
+
+### ─────────────────────────────────────────────────────────
+### 11. Reset password with mismatched confirm (expect 400)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "token": "PASTE_RESET_TOKEN",
+  "newPassword": "NewAdmin@456!",
+  "confirmPassword": "DifferentPassword@999!"
+}
+
+###
+# ❌ Expected 400 Bad Request — FluentValidation: passwords must match
+
+### ─────────────────────────────────────────────────────────
+### 12. Logout (clears HTTP-only cookie)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{newAccessToken}}
+
+###
+# ✅ Expected 200 — access_token cookie deleted from browser
+# Note: the JWT bearer token itself remains valid until expiry.
+# Always revoke the refresh token (step 4) alongside logout
+# to prevent re-authentication via token refresh.
+
+### ─────────────────────────────────────────────────────────
+### 13. Logout without auth (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/logout
+
+###
+# ❌ Expected 401 Unauthorized — [Authorize] required

@@ -1,0 +1,94 @@
+@page
+@model AppointmentSaaS.Web.Pages.Businesses.IndexModel
+@{
+    ViewData["Title"] = "Businesses";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Businesses</h2>
+        <a asp-page="Create" class="btn btn-primary">+ New Business</a>
+    </div>
+
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            @if (Model.Businesses.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>City</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var b in Model.Businesses)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@b.Name</td>
+                                    <td>@b.Type</td>
+                                    <td>@(b.City ?? "—")</td>
+                                    <td>@(b.Phone ?? "—")</td>
+                                    <td>@(b.Email ?? "—")</td>
+                                    <td>
+                                        @if (b.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a asp-page="Details" asp-route-id="@b.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                                            <a asp-page="Edit" asp-route-id="@b.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                            @if (b.IsActive)
+                                            {
+                                                <form method="post" asp-page-handler="Deactivate">
+                                                    <input type="hidden" name="id" value="@b.Id" />
+                                                    <button class="btn btn-sm btn-outline-warning">Deactivate</button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form method="post" asp-page-handler="Activate">
+                                                    <input type="hidden" name="id" value="@b.Id" />
+                                                    <button class="btn btn-sm btn-outline-success">Activate</button>
+                                                </form>
+                                            }
+                                            <form method="post" asp-page-handler="Delete"
+                                                  onsubmit="return confirm('Delete this business?')">
+                                                <input type="hidden" name="id" value="@b.Id" />
+                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">No businesses found. <a asp-page="Create">Add one.</a></div>
+            }
+        </div>
+    </div>
+</div>

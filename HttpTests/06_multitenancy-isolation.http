@@ -1,0 +1,270 @@
+# ============================================================
+# Globe AMS — 06. Multi-Tenancy Isolation Tests
+# ============================================================
+# Verifies that EF Core global query filters enforce strict
+# row-level tenant isolation. A user authenticated for Tenant A
+# must NEVER access Tenant B's data, even with known GUIDs.
+#
+# Architecture reminder:
+#   TenantResolver reads "tenantId" from JWT claim (priority 1)
+#   or X-Tenant-Id header (priority 2, unauthenticated routes only).
+#
+#   AppDbContext global query filter on all tenant-scoped entities:
+#     HasQueryFilter(e => !e.IsDeleted && (tenantId == null || e.TenantId == tenantId))
+#
+#   tenantId == null only when TenantResolver returns null
+#   (i.e., no JWT + no X-Tenant-Id header → bypasses filter for super-admin).
+#
+# ============================================================
+# PREREQUISITES:
+#   ✓ alpha-clinic and beta-spa tenants created (02_tenant-management.http)
+#   ✓ Alice registered + verified in alpha-clinic, logged in → alphaAdminToken
+#   ✓ Bob registered + verified in beta-spa, logged in → betaAdminToken
+#   ✓ Services created in each tenant (04_services.http)
+#   ✓ At least one appointment created in Globe tenant (05_appointments.http)
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+@globeAdminToken  = PASTE_GLOBE_ADMIN_JWT_HERE
+@globeTenantId    = PASTE_GLOBE_TENANT_ID_HERE
+@globeApptId      = PASTE_GLOBE_APPT_ID_HERE   # from 05_appointments.http step 1
+
+@alphaTenantId    = PASTE_ALPHA_TENANT_ID_HERE
+@alphaAdminToken  = PASTE_ALPHA_ADMIN_JWT_HERE
+@alphaApptId      = PASTE_ALPHA_APPT_ID_HERE   # appointment in alpha-clinic (if created)
+
+@betaTenantId     = PASTE_BETA_TENANT_ID_HERE
+@betaAdminToken   = PASTE_BETA_ADMIN_JWT_HERE
+
+@clientToken      = PASTE_GLOBE_CLIENT_JWT_HERE  # Jane's Client token (globe tenant)
+
+
+### =================================================================
+### SECTION A — Tenant-Scoped Login Isolation
+### =================================================================
+
+### A1. Globe admin logs in via wrong tenant slug → 403
+# Correct credentials, wrong tenant → AppUser.TenantId mismatch
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "password": "Admin@123!",
+  "tenantSlug": "beta-spa"
+}
+
+###
+# ❌ Expected 403 Forbidden — "User does not belong to this tenant."
+# ✓ Identity resolves the user, then AppUser FK check fails:
+#   appUser.TenantId = globe ≠ beta-spa
+# ✓ Credentials alone are not enough — tenant membership is required.
+
+### A2. Alice (alpha) logs in via globe slug → 403
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@alphaclinic.com",
+  "password": "Alpha@123!",
+  "tenantSlug": "globe"
+}
+
+###
+# ❌ Expected 403 — alice@alphaclinic.com belongs to alpha-clinic, not globe
+
+### A3. Login with non-existent tenant → 404
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "password": "Admin@123!",
+  "tenantSlug": "fake-xyz"
+}
+
+###
+# ❌ Expected 404 — tenant not found before credentials are even validated
+
+
+### =================================================================
+### SECTION B — JWT-Based EF Query Filter (Appointments)
+### =================================================================
+
+### B1. Globe admin reads ALPHA appointments (expect empty array)
+# JWT: tenantId=globe → EF filter: WHERE TenantId=globe
+# Route param: alphaTenantId → handler queries WHERE TenantId=alpha
+# Combined: 0 rows returned (globe ≠ alpha)
+GET {{baseUrl}}/api/appointments/tenant/{{alphaTenantId}}
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 200 with [] — EF query filter blocks cross-tenant read
+# The globe JWT + alpha route param = no matching rows
+
+### B2. Alpha admin reads GLOBE appointments (expect empty array)
+GET {{baseUrl}}/api/appointments/tenant/{{globeTenantId}}
+Authorization: Bearer {{alphaAdminToken}}
+
+###
+# ✅ Expected 200 with [] — alpha JWT + globe route param = no matching rows
+
+### B3. Beta admin reads GLOBE appointments (expect empty array)
+GET {{baseUrl}}/api/appointments/tenant/{{globeTenantId}}
+Authorization: Bearer {{betaAdminToken}}
+
+###
+# ✅ Expected 200 with []
+
+### B4. Alpha admin reads BETA appointments (expect empty array)
+GET {{baseUrl}}/api/appointments/tenant/{{betaTenantId}}
+Authorization: Bearer {{alphaAdminToken}}
+
+###
+# ✅ Expected 200 with []
+
+
+### =================================================================
+### SECTION C — Cross-Tenant ID Guessing (Single Resource)
+### =================================================================
+
+### C1. Alpha admin fetches Globe appointment by known ID → 404
+# Even if Alice knows the Globe appointment's GUID, EF filter blocks it.
+GET {{baseUrl}}/api/appointments/{{globeApptId}}
+Authorization: Bearer {{alphaAdminToken}}
+
+###
+# ❌ Expected 404 Not Found
+# EF filter: WHERE TenantId=alpha → 0 rows → NotFoundException
+
+### C2. Globe admin fetches Alpha appointment by ID → 404
+GET {{baseUrl}}/api/appointments/{{alphaApptId}}
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ❌ Expected 404 Not Found
+# ✓ Cross-tenant GUID guessing is blocked at the database filter layer
+
+### C3. Alpha admin tries to CONFIRM a Globe appointment → 404
+PATCH {{baseUrl}}/api/appointments/{{globeApptId}}/confirm
+Authorization: Bearer {{alphaAdminToken}}
+
+###
+# ❌ Expected 404 — appointment not visible to alpha → cannot be mutated
+
+
+### =================================================================
+### SECTION D — X-Tenant-Id Header Behavior
+### =================================================================
+# TenantResolver resolution order:
+#   1. JWT "tenantId" claim (authenticated requests)
+#   2. X-Tenant-Id header (unauthenticated requests)
+#   3. null (no filter → super-admin bypass)
+
+### D1. Get Globe services via X-Tenant-Id header (unauthenticated)
+GET {{baseUrl}}/api/services/tenant/{{globeTenantId}}
+X-Tenant-Id: {{globeTenantId}}
+
+###
+# ✅ Expected 200 — Globe services returned
+# No JWT → TenantResolver uses X-Tenant-Id header → EF filter applied correctly
+
+### D2. Get Alpha services via X-Tenant-Id header
+GET {{baseUrl}}/api/services/tenant/{{alphaTenantId}}
+X-Tenant-Id: {{alphaTenantId}}
+
+###
+# ✅ Expected 200 — Alpha services only
+
+### D3. X-Tenant-Id with fake GUID (expect empty array)
+GET {{baseUrl}}/api/services/tenant/00000000-0000-0000-0000-000000000000
+X-Tenant-Id: 00000000-0000-0000-0000-000000000000
+
+###
+# ✅ Expected 200 with [] — no services for nonexistent tenantId
+
+### D4. JWT tenantId overrides X-Tenant-Id header (authenticated request)
+# Globe admin JWT has tenantId=globe. Header says alpha.
+# JWT WINS → globe filter applied → globe's appointments returned only.
+GET {{baseUrl}}/api/appointments/tenant/{{globeTenantId}}
+Authorization: Bearer {{globeAdminToken}}
+X-Tenant-Id: {{alphaTenantId}}
+
+###
+# ✅ Expected 200 — Globe appointments (JWT tenantId takes precedence)
+# ✓ Header spoofing cannot escalate a JWT-authenticated request
+
+
+### =================================================================
+### SECTION E — Write Operations: tenantId Always From JWT
+### =================================================================
+
+### E1. Globe admin creates appointment — tenantId from JWT, NOT body
+# The CreateAppointmentCommand does not accept tenantId in the request body.
+# It always uses ICurrentUserService.TenantId (from JWT claim).
+POST {{baseUrl}}/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "serviceId": "00000000-0000-0000-0000-000000000001",
+  "staffId": "00000000-0000-0000-0000-000000000001",
+  "startTime": "2026-07-01T10:00:00Z",
+  "notes": "TenantId injection test — id in notes is ignored"
+}
+
+###
+# Response tenantId will equal globeTenantId regardless of any IDs in the body.
+# (Request may fail with 404 if serviceId/staffId don't exist — that's fine,
+#  the point is tenantId cannot be overridden via request payload.)
+
+### E2. Globe admin creates service — tenantId from JWT (not body)
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "name": "Isolation Proof Service",
+  "description": "This will be created in GLOBE tenant regardless of alpha context",
+  "durationMinutes": 15,
+  "price": 5.00
+}
+
+###
+# ✅ Expected 201 — tenantId in response = globeTenantId (not alphaTenantId)
+# ✓ Write path enforces tenant isolation through JWT extraction, not trust in client input
+
+
+### =================================================================
+### SECTION F — Role + Tenant Combined Authorization
+### =================================================================
+
+### F1. Client role (globe) tries to confirm appointment → 403
+PATCH {{baseUrl}}/api/appointments/{{globeApptId}}/confirm
+Authorization: Bearer {{clientToken}}
+
+###
+# ❌ Expected 403 — role "Client" is not in [TenantAdmin, Staff]
+
+### F2. Client role (globe) tries to complete appointment → 403
+PATCH {{baseUrl}}/api/appointments/{{globeApptId}}/complete
+Authorization: Bearer {{clientToken}}
+
+###
+# ❌ Expected 403
+
+### F3. Alpha admin confirms Globe appointment (wrong tenant + right role) → 404
+# Even with TenantAdmin role, the appointment is invisible due to EF filter.
+PATCH {{baseUrl}}/api/appointments/{{globeApptId}}/confirm
+Authorization: Bearer {{alphaAdminToken}}
+
+###
+# ❌ Expected 404 — appointment not found in alpha's tenant scope
+# ✓ Double defence: role check passes, then EF filter blocks → 404
+
+### F4. Unauthenticated user reads appointments → 401
+GET {{baseUrl}}/api/appointments/tenant/{{globeTenantId}}
+
+###
+# ❌ Expected 401 Unauthorized — [Authorize] on AppointmentsController

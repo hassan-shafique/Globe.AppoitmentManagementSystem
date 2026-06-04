@@ -1,0 +1,104 @@
+# ============================================================
+# Globe AMS — 01. Admin Authentication
+# ============================================================
+# Seeded admin: admin@globe.com / Admin@123!
+# Tenant slug:  globe  (role: TenantAdmin — NOT SuperAdmin)
+#
+# ⚠ The seeded admin has TenantAdmin role, not SuperAdmin.
+#   To create new tenants you need SuperAdmin.
+#   See 02_tenant-management.http for setup instructions.
+#
+# Run order: send these requests top to bottom.
+# Copy accessToken + tenantId from the login response for use in later files.
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+### ─────────────────────────────────────────────────────────
+### 1. Login as seeded Globe TenantAdmin (HAPPY PATH)
+### ─────────────────────────────────────────────────────────
+# @name adminLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "password": "Admin@123!",
+  "tenantSlug": "globe"
+}
+
+###
+# ✅ Expected 200:
+# {
+#   "accessToken": "<jwt>",    ← copy to @globeAdminToken in later files
+#   "refreshToken": "<token>", ← copy to @globeRefreshToken
+#   "expiresAt": "...",
+#   "userId": "<guid>",
+#   "email": "admin@globe.com",
+#   "fullName": "Admin User",
+#   "role": "TenantAdmin",
+#   "tenantId": "<globe-guid>" ← copy to @globeTenantId in later files
+# }
+# Decode at https://jwt.io to verify claims include "tenantId" and "role".
+
+### ─────────────────────────────────────────────────────────
+### 2. Login with wrong password (expect 400)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "password": "WrongPassword!",
+  "tenantSlug": "globe"
+}
+
+###
+# ❌ Expected 400 Bad Request — "Invalid credentials."
+
+### ─────────────────────────────────────────────────────────
+### 3. Login with non-existent tenant slug (expect 404)
+### ─────────────────────────────────────────────────────────
+# MULTI-TENANCY: correct credentials + wrong slug → tenant not found
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@globe.com",
+  "password": "Admin@123!",
+  "tenantSlug": "nonexistent-tenant"
+}
+
+###
+# ❌ Expected 404 Not Found
+# Tenant resolution happens before credential check.
+# Slug "nonexistent-tenant" has no Tenant row → NotFoundException.
+
+### ─────────────────────────────────────────────────────────
+### 4. Login with user from another tenant using Globe slug (expect 403)
+### ─────────────────────────────────────────────────────────
+# MULTI-TENANCY: a user registered in alpha-clinic cannot login via globe slug.
+# Uncomment after registering alice@alphaclinic.com in alpha-clinic tenant.
+#
+# POST {{baseUrl}}/api/auth/login
+# Content-Type: application/json
+#
+# {
+#   "email": "alice@alphaclinic.com",
+#   "password": "Alpha@123!",
+#   "tenantSlug": "globe"
+# }
+#
+# ❌ Expected 403 Forbidden — "User does not belong to this tenant."
+# Alice's AppUser.TenantId = alpha-clinic, so globe login is rejected.
+
+### ─────────────────────────────────────────────────────────
+### 5. Login with empty body (expect 400 / validation error)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{}
+
+###
+# ❌ Expected 400 Bad Request — FluentValidation errors for required fields

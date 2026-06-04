@@ -1,0 +1,191 @@
+# ============================================================
+# Globe AMS — 04. Service Management
+# ============================================================
+# GET /api/services/tenant/{id} — public (no auth)
+# POST /api/services            — TenantAdmin only (JWT required)
+#
+# EF query filter (AppDbContext):
+#   WHERE TenantId = <jwt_tenant_id> AND IsDeleted = 0
+#
+# On unauthenticated GET: TenantProvider.TenantId = null
+# → filter bypassed unless X-Tenant-Id header is sent.
+# On authenticated POST: tenantId is taken from JWT claim,
+# NOT from the request body — users cannot inject a foreign tenantId.
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+# From 01_admin-auth.http login:
+@globeAdminToken = PASTE_GLOBE_ADMIN_JWT_HERE
+@globeTenantId   = PASTE_GLOBE_TENANT_ID_HERE
+
+# From 02_tenant-management.http (if created):
+@alphaTenantId   = PASTE_ALPHA_TENANT_ID_HERE
+@betaTenantId    = PASTE_BETA_TENANT_ID_HERE
+@alphaAdminToken = PASTE_ALPHA_ADMIN_JWT_HERE
+@betaAdminToken  = PASTE_BETA_ADMIN_JWT_HERE
+
+### ─────────────────────────────────────────────────────────
+### 1. Create service in Globe tenant (TenantAdmin)
+### ─────────────────────────────────────────────────────────
+# @name createGlobeService
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "name": "Globe Consultation",
+  "description": "Standard 30-minute consultation",
+  "durationMinutes": 30,
+  "price": 50.00
+}
+
+###
+# ✅ Expected 201:
+# {
+#   "id": "<service-guid>",    ← copy to @globeServiceId in 05_appointments.http
+#   "tenantId": "<globe-guid>",← MUST match globeTenantId — set from JWT, not body
+#   "name": "Globe Consultation",
+#   "durationMinutes": 30,
+#   "price": 50.00,
+#   "isActive": true
+# }
+
+### ─────────────────────────────────────────────────────────
+### 2. Create a second service in Globe tenant
+### ─────────────────────────────────────────────────────────
+# @name createGlobeService2
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "name": "Globe Premium Session",
+  "description": "60-minute extended consultation",
+  "durationMinutes": 60,
+  "price": 90.00
+}
+
+### ─────────────────────────────────────────────────────────
+### 3. Get services for Globe tenant (no auth required)
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/services/tenant/{{globeTenantId}}
+
+###
+# ✅ Expected 200 — array with both Globe services
+
+### ─────────────────────────────────────────────────────────
+### 4. Create service in Alpha Clinic (TenantAdmin of alpha)
+### ─────────────────────────────────────────────────────────
+# @name createAlphaService
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{alphaAdminToken}}
+
+{
+  "name": "Alpha Haircut",
+  "description": "Premium haircut service",
+  "durationMinutes": 45,
+  "price": 35.00
+}
+
+###
+# ✅ Expected 201 — service belongs to alpha-clinic tenant
+
+### ─────────────────────────────────────────────────────────
+### 5. Create service in Beta Spa (TenantAdmin of beta)
+### ─────────────────────────────────────────────────────────
+# @name createBetaService
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{betaAdminToken}}
+
+{
+  "name": "Beta Massage",
+  "description": "60-minute relaxation massage",
+  "durationMinutes": 60,
+  "price": 80.00
+}
+
+###
+# ✅ Expected 201 — service belongs to beta-spa tenant
+
+### ─────────────────────────────────────────────────────────
+### 6. Get Alpha services — should NOT contain Beta services
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/services/tenant/{{alphaTenantId}}
+
+###
+# ✅ Expected 200 — only ["Alpha Haircut"], no "Beta Massage", no Globe services
+# EF filter: WHERE TenantId = alpha-guid AND IsDeleted = 0
+
+### ─────────────────────────────────────────────────────────
+### 7. Get Beta services — should NOT contain Alpha services
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/services/tenant/{{betaTenantId}}
+
+###
+# ✅ Expected 200 — only ["Beta Massage"]
+
+### ─────────────────────────────────────────────────────────
+### 8. Get services for non-existent tenant (expect empty array)
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/services/tenant/00000000-0000-0000-0000-000000000000
+
+###
+# ✅ Expected 200 with [] — no services for unknown tenantId
+
+### ─────────────────────────────────────────────────────────
+### 9. Globe admin tries to create a service for Alpha (tenantId injection attempt)
+### ─────────────────────────────────────────────────────────
+# MULTI-TENANCY: Globe admin sends Alpha's tenantId in the body.
+# The handler ignores request body tenantId — it uses JWT tenantId instead.
+# Result: service is created in GLOBE tenant, not Alpha.
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "name": "Injection Attempt",
+  "description": "Trying to create in alpha-clinic using globe JWT",
+  "durationMinutes": 30,
+  "price": 10.00
+}
+
+###
+# ✅ Expected 201 — BUT tenantId in response will be GLOBE's, not Alpha's.
+# ✓ Proves: tenantId is always sourced from JWT, not request payload.
+
+### ─────────────────────────────────────────────────────────
+### 10. Create service without auth (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+
+{
+  "name": "No Auth Service",
+  "durationMinutes": 30,
+  "price": 0
+}
+
+###
+# ❌ Expected 401 Unauthorized
+
+### ─────────────────────────────────────────────────────────
+### 11. Create service with Client role (expect 403)
+### ─────────────────────────────────────────────────────────
+# Paste Jane's Client JWT from 03_register-verify-login.http step 4:
+@clientToken = PASTE_CLIENT_JWT_HERE
+
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{clientToken}}
+
+{
+  "name": "Unauthorized Service",
+  "durationMinutes": 30,
+  "price": 0
+}
+
+###
+# ❌ Expected 403 Forbidden — [Authorize(Roles = "TenantAdmin")] blocks Client role

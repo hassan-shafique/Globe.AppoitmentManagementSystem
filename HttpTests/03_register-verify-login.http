@@ -1,0 +1,195 @@
+# ============================================================
+# Globe AMS — 03. Register → Verify Email → Login
+# ============================================================
+# Full auth flow for new users.
+# EmailService in Development is a log-only stub — verification tokens
+# are printed to the console. Look for lines like:
+#   [Email] To: ... | Subject: Verify Your Email
+#   Body: ...?token=<URL_ENCODED_TOKEN>&email=...
+# URL-decode the token before pasting it here.
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+### ─────────────────────────────────────────────────────────
+### 1. Register new user in Globe tenant
+### ─────────────────────────────────────────────────────────
+# @name registerGlobeClient
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@test.com",
+  "password": "Test@123!",
+  "tenantSlug": "globe"
+}
+
+###
+# ✅ Expected 200:
+# {
+#   "userId": "<guid>",
+#   "email": "jane.smith@test.com",
+#   "fullName": "Jane Smith",
+#   "message": "Registration successful. Please verify your email."
+# }
+# ⚠ User CANNOT log in until email is verified (Identity: RequireConfirmedEmail=true).
+
+### ─────────────────────────────────────────────────────────
+### 2. Try login BEFORE email verification (expect 400)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jane.smith@test.com",
+  "password": "Test@123!",
+  "tenantSlug": "globe"
+}
+
+###
+# ❌ Expected 400 Bad Request — email not confirmed
+# ✓ Proves RequireConfirmedEmail=true is enforced at login
+
+### ─────────────────────────────────────────────────────────
+### 3. Verify email
+### ─────────────────────────────────────────────────────────
+# Check console output for the token printed by the email stub.
+# URL-decode it before pasting (replace %2B → +, %2F → /, %3D → =, etc.)
+POST {{baseUrl}}/api/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "jane.smith@test.com",
+  "token": "PASTE_TOKEN_FROM_CONSOLE_LOGS"
+}
+
+###
+# ✅ Expected 200 — email confirmed, login now allowed
+
+### ─────────────────────────────────────────────────────────
+### 4. Login after verification
+### ─────────────────────────────────────────────────────────
+# @name janeLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jane.smith@test.com",
+  "password": "Test@123!",
+  "tenantSlug": "globe"
+}
+
+###
+# ✅ Expected 200:
+# {
+#   "accessToken": "<jwt>",  ← copy as @clientToken in 05_appointments.http
+#   "role": "Client",        ← note: new registrations get Client role
+#   "tenantId": "<globe-guid>"
+# }
+
+### ─────────────────────────────────────────────────────────
+### 5. Resend verification (anti-enumeration: always 200)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "nobody@nonexistent.com"
+}
+
+###
+# ✅ Expected 200 — no error even if email doesn't exist
+# ✓ Anti-enumeration: cannot discover registered emails via this endpoint
+
+### ─────────────────────────────────────────────────────────
+### 6. Register same email twice (expect 400)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@test.com",
+  "password": "Test@123!",
+  "tenantSlug": "globe"
+}
+
+###
+# ❌ Expected 400 — email already registered (Identity: RequireUniqueEmail=true)
+
+### ─────────────────────────────────────────────────────────
+### 7. Register with weak password (expect 400)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Weak",
+  "lastName": "Pass",
+  "email": "weakpass@test.com",
+  "password": "password",
+  "tenantSlug": "globe"
+}
+
+###
+# ❌ Expected 400 — password does not meet Identity policy:
+# RequireDigit=true, RequireLowercase=true, RequireUppercase=true,
+# RequireNonAlphanumeric=true, RequiredLength=8
+
+### ─────────────────────────────────────────────────────────
+### 8. Register in Alpha Clinic (needs alpha-clinic tenant from 02)
+### ─────────────────────────────────────────────────────────
+# @name registerAlphaAdmin
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Alpha",
+  "email": "alice@alphaclinic.com",
+  "password": "Alpha@123!",
+  "tenantSlug": "alpha-clinic"
+}
+
+###
+# ✅ Expected 200 — registers Alice in alpha-clinic tenant
+# After verifying and logging in, Alice's JWT will contain tenantId=alpha-guid
+
+### ─────────────────────────────────────────────────────────
+### 9. Register in Beta Spa (needs beta-spa tenant from 02)
+### ─────────────────────────────────────────────────────────
+# @name registerBetaUser
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Bob",
+  "lastName": "Beta",
+  "email": "bob@betaspa.com",
+  "password": "Beta@123!",
+  "tenantSlug": "beta-spa"
+}
+
+###
+# ✅ Expected 200 — registers Bob in beta-spa tenant
+# After verifying and logging in, Bob's JWT will contain tenantId=beta-guid
+
+### ─────────────────────────────────────────────────────────
+### 10. Register in non-existent tenant (expect 404)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ghost",
+  "lastName": "User",
+  "email": "ghost@test.com",
+  "password": "Ghost@123!",
+  "tenantSlug": "ghost-tenant"
+}
+
+###
+# ❌ Expected 404 Not Found — tenant "ghost-tenant" does not exist

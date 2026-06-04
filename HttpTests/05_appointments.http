@@ -1,0 +1,183 @@
+# ============================================================
+# Globe AMS — 05. Appointment Lifecycle
+# ============================================================
+# Full lifecycle: Create (Pending) → Confirm → Complete
+#                                  └→ Cancel
+#
+# Prerequisites (fill IDs from previous files):
+#   @globeAdminToken  — from 01_admin-auth.http
+#   @globeTenantId    — from 01_admin-auth.http login response
+#   @globeServiceId   — from 04_services.http step 1
+#   @globeStaffId     — AppUser.Id of a staff member in globe tenant
+#                       (use the admin's AppUser.Id for initial tests)
+#
+# Note on staffId: the admin's AppUser.Id is in the login response as "userId".
+# Use that as staffId for the first test — in production, you'd have dedicated Staff records.
+# ============================================================
+
+@baseUrl = http://localhost:5006
+
+@globeAdminToken = PASTE_GLOBE_ADMIN_JWT_HERE
+@globeTenantId   = PASTE_GLOBE_TENANT_ID_HERE
+@globeServiceId  = PASTE_GLOBE_SERVICE_ID_HERE  # from 04_services.http
+@globeStaffId    = PASTE_GLOBE_STAFF_APPUSER_ID_HERE  # "userId" from login response
+
+# Filled after creation:
+@appointmentId1  = PASTE_AFTER_CREATE_STEP_1
+@appointmentId2  = PASTE_AFTER_CREATE_STEP_7
+
+# Client token (from 03_register-verify-login.http step 4):
+@clientToken     = PASTE_CLIENT_JWT_HERE
+
+### ─────────────────────────────────────────────────────────
+### 1. Create appointment — Pending status
+### ─────────────────────────────────────────────────────────
+# @name createAppointment1
+POST {{baseUrl}}/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "serviceId": "{{globeServiceId}}",
+  "staffId": "{{globeStaffId}}",
+  "startTime": "2026-06-10T10:00:00Z",
+  "notes": "Integration test appointment #1"
+}
+
+###
+# ✅ Expected 201:
+# {
+#   "id": "<appt-guid>",       ← set as @appointmentId1
+#   "tenantId": "<globe-guid>",← sourced from JWT, not body
+#   "status": "Pending",
+#   "serviceId": "...",
+#   "staffId": "...",
+#   "startTime": "2026-06-10T10:00:00Z",
+#   "notes": "Integration test appointment #1"
+# }
+# ✓ TenantId = globe (from JWT), Pending status on creation
+
+### ─────────────────────────────────────────────────────────
+### 2. Get all appointments for Globe tenant
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/appointments/tenant/{{globeTenantId}}
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 200 — array containing the appointment just created
+
+### ─────────────────────────────────────────────────────────
+### 3. Get appointment by ID
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/appointments/{{appointmentId1}}
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 200 — appointment detail with status = "Pending"
+
+### ─────────────────────────────────────────────────────────
+### 4. Confirm appointment (TenantAdmin / Staff role)
+### ─────────────────────────────────────────────────────────
+PATCH {{baseUrl}}/api/appointments/{{appointmentId1}}/confirm
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 204 No Content — status transitions to "Confirmed"
+
+### ─────────────────────────────────────────────────────────
+### 5. Verify status is Confirmed
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/appointments/{{appointmentId1}}
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 200 — status = "Confirmed"
+
+### ─────────────────────────────────────────────────────────
+### 6. Complete appointment (TenantAdmin / Staff role)
+### ─────────────────────────────────────────────────────────
+PATCH {{baseUrl}}/api/appointments/{{appointmentId1}}/complete
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 204 No Content — status transitions to "Completed"
+
+### ─────────────────────────────────────────────────────────
+### 7. Create second appointment (for cancel test)
+### ─────────────────────────────────────────────────────────
+# @name createAppointment2
+POST {{baseUrl}}/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+{
+  "serviceId": "{{globeServiceId}}",
+  "staffId": "{{globeStaffId}}",
+  "startTime": "2026-06-11T14:00:00Z",
+  "notes": "Appointment to be cancelled"
+}
+
+###
+# ✅ Expected 201 — copy id to @appointmentId2
+
+### ─────────────────────────────────────────────────────────
+### 8. Cancel appointment (any authenticated user)
+### ─────────────────────────────────────────────────────────
+PATCH {{baseUrl}}/api/appointments/{{appointmentId2}}/cancel
+Content-Type: application/json
+Authorization: Bearer {{globeAdminToken}}
+
+"Customer requested cancellation — schedule conflict"
+
+###
+# ✅ Expected 204 No Content — status transitions to "Cancelled"
+
+### ─────────────────────────────────────────────────────────
+### 9. Verify appointment is Cancelled
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/appointments/{{appointmentId2}}
+Authorization: Bearer {{globeAdminToken}}
+
+###
+# ✅ Expected 200 — status = "Cancelled", cancellationReason present
+
+### ─────────────────────────────────────────────────────────
+### 10. Create appointment without auth (expect 401)
+### ─────────────────────────────────────────────────────────
+POST {{baseUrl}}/api/appointments
+Content-Type: application/json
+
+{
+  "serviceId": "{{globeServiceId}}",
+  "staffId": "{{globeStaffId}}",
+  "startTime": "2026-06-12T09:00:00Z"
+}
+
+###
+# ❌ Expected 401 Unauthorized — [Authorize] on controller
+
+### ─────────────────────────────────────────────────────────
+### 11. Confirm with Client role (expect 403)
+### ─────────────────────────────────────────────────────────
+PATCH {{baseUrl}}/api/appointments/{{appointmentId1}}/confirm
+Authorization: Bearer {{clientToken}}
+
+###
+# ❌ Expected 403 Forbidden — [Authorize(Roles = "TenantAdmin,Staff")]
+
+### ─────────────────────────────────────────────────────────
+### 12. Complete with Client role (expect 403)
+### ─────────────────────────────────────────────────────────
+PATCH {{baseUrl}}/api/appointments/{{appointmentId1}}/complete
+Authorization: Bearer {{clientToken}}
+
+###
+# ❌ Expected 403 Forbidden
+
+### ─────────────────────────────────────────────────────────
+### 13. Get appointment by ID without auth (expect 401)
+### ─────────────────────────────────────────────────────────
+GET {{baseUrl}}/api/appointments/{{appointmentId1}}
+
+###
+# ❌ Expected 401 Unauthorized

@@ -48,6 +48,7 @@ public static class DependencyInjection
         })
         .AddJwtBearer(options =>
         {
+            options.MapInboundClaims = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -74,6 +75,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantProvider, TenantResolver>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+        services.AddScoped<IBusinessRepository, BusinessRepository>();
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtService, JwtService>();

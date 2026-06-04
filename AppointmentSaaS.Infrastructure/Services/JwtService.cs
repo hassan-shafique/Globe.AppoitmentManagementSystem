@@ -60,7 +60,8 @@ public class JwtService(IConfiguration configuration) : IJwtService
 
         try
         {
-            var principal = new JwtSecurityTokenHandler().ValidateToken(token, parameters, out _);
+            var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+            var principal = handler.ValidateToken(token, parameters, out _);
             var userIdClaim = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
             return userIdClaim != null ? Guid.Parse(userIdClaim) : null;
         }
