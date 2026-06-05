@@ -40,6 +40,12 @@ public class Service : SoftDeleteEntity
     /// </summary>
     public decimal Price { get; private set; }
 
+    /// <summary>
+    /// Time blocked after the appointment ends before the next booking can start, in minutes.
+    /// Zero means no buffer.
+    /// </summary>
+    public int BufferTimeMinutes { get; private set; }
+
     /// <summary>Whether this service is currently available for booking.</summary>
     public bool IsActive { get; private set; } = true;
 
@@ -64,6 +70,7 @@ public class Service : SoftDeleteEntity
     /// <param name="description">Optional description.</param>
     /// <param name="durationMinutes">Duration in minutes. Must be &gt; 0.</param>
     /// <param name="price">Price. Must be ≥ 0.</param>
+    /// <param name="bufferTimeMinutes">Minutes to block after appointment ends. Defaults to 0.</param>
     /// <param name="businessId">Optional business location restriction.</param>
     public static Service Create(
         Guid tenantId,
@@ -71,11 +78,13 @@ public class Service : SoftDeleteEntity
         string? description,
         int durationMinutes,
         decimal price,
+        int bufferTimeMinutes = 0,
         Guid? businessId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         if (durationMinutes <= 0) throw new ArgumentException("Duration must be positive.", nameof(durationMinutes));
         if (price < 0) throw new ArgumentException("Price cannot be negative.", nameof(price));
+        if (bufferTimeMinutes < 0) throw new ArgumentException("Buffer time cannot be negative.", nameof(bufferTimeMinutes));
         return new Service
         {
             TenantId = tenantId,
@@ -83,20 +92,23 @@ public class Service : SoftDeleteEntity
             Description = description,
             DurationMinutes = durationMinutes,
             Price = price,
+            BufferTimeMinutes = bufferTimeMinutes,
             BusinessId = businessId
         };
     }
 
     /// <summary>Updates mutable fields. Sets <see cref="AuditableEntity.UpdatedAt"/>.</summary>
-    public void Update(string name, string? description, int durationMinutes, decimal price)
+    public void Update(string name, string? description, int durationMinutes, decimal price, int bufferTimeMinutes)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         if (durationMinutes <= 0) throw new ArgumentException("Duration must be positive.", nameof(durationMinutes));
         if (price < 0) throw new ArgumentException("Price cannot be negative.", nameof(price));
+        if (bufferTimeMinutes < 0) throw new ArgumentException("Buffer time cannot be negative.", nameof(bufferTimeMinutes));
         Name = name;
         Description = description;
         DurationMinutes = durationMinutes;
         Price = price;
+        BufferTimeMinutes = bufferTimeMinutes;
         UpdatedAt = DateTime.UtcNow;
     }
 

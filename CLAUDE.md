@@ -136,11 +136,61 @@ dotnet ef migrations add AddBusinessType \
   --startup-project AppointmentSaaS.Web
 ```
 
+## Service Management Module
+
+### Service entity (`AppointmentSaaS.Domain/Entities/Service.cs`)
+- Inherits `SoftDeleteEntity`; scoped to a `Tenant` via `TenantId`
+- Optionally scoped to a `Business` via `BusinessId` (null = all locations)
+- Factory: `Service.Create(tenantId, name, description, durationMinutes, price, bufferTimeMinutes?, businessId?)`
+- Methods: `Update(...)`, `Activate()`, `Deactivate()`, `SoftDelete()`, `Restore()`
+
+### Fields
+| Field | Type | Notes |
+|---|---|---|
+| `Name` | string | Required, max 200 chars |
+| `Description` | string? | Optional, max 1000 chars |
+| `DurationMinutes` | int | Must be > 0 |
+| `Price` | decimal | Must be ≥ 0 |
+| `BufferTimeMinutes` | int | Minutes blocked after appointment ends, ≥ 0 |
+| `IsActive` | bool | Controls booking availability |
+
+### CQRS (`AppointmentSaaS.Application/Features/Services/`)
+| Command/Query | Returns |
+|---|---|
+| `CreateServiceCommand` | `ServiceDto` |
+| `UpdateServiceCommand` | `ServiceDto` |
+| `DeleteServiceCommand` | void (soft-delete) |
+| `ActivateServiceCommand` | void |
+| `DeactivateServiceCommand` | void |
+| `GetServiceByIdQuery` | `ServiceDto` |
+| `GetServicesByTenantQuery` | `IReadOnlyList<ServiceDto>` |
+| `GetActiveServicesByTenantQuery` | `IReadOnlyList<ServiceDto>` |
+| `GetServicesByBusinessQuery` | `IReadOnlyList<ServiceDto>` |
+
+### API endpoints (`/api/services`)
+| Method | Route | Roles |
+|---|---|---|
+| GET | `/api/services` | Authenticated |
+| GET | `/api/services/active` | Authenticated |
+| GET | `/api/services/{id}` | Authenticated |
+| GET | `/api/services/business/{businessId}` | Authenticated |
+| POST | `/api/services` | TenantAdmin, SuperAdmin |
+| PUT | `/api/services/{id}` | TenantAdmin, SuperAdmin |
+| DELETE | `/api/services/{id}` | TenantAdmin, SuperAdmin |
+| PATCH | `/api/services/{id}/activate` | TenantAdmin, SuperAdmin |
+| PATCH | `/api/services/{id}/deactivate` | TenantAdmin, SuperAdmin |
+
+### Razor Pages (`/Services/`)
+`Index`, `Create`, `Edit`, `Details`
+
+### Migration
+`AddServiceBufferTime` — adds `BufferTimeMinutes` column to `Services` table.
+
 ## Running Tests
 ```bash
 dotnet test AppointmentSaaS.Tests/
 ```
-~57 tests — Domain (Appointment, Business), Application (Auth, Appointments, Businesses), Infrastructure (Repositories).
+~79 tests — Domain (Appointment, Business, Service), Application (Auth, Appointments, Businesses, Services), Infrastructure (Repositories).
 
 ## Architecture Notes
 

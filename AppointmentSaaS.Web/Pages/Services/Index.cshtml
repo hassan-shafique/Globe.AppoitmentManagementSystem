@@ -1,0 +1,92 @@
+@page
+@model AppointmentSaaS.Web.Pages.Services.IndexModel
+@{
+    ViewData["Title"] = "Services";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Services</h2>
+        <a asp-page="Create" class="btn btn-primary">+ New Service</a>
+    </div>
+
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            @if (Model.Services.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                                <th>Buffer</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Services)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@s.Name</td>
+                                    <td>@s.DurationMinutes min</td>
+                                    <td>@s.Price.ToString("C")</td>
+                                    <td>@(s.BufferTimeMinutes > 0 ? $"{s.BufferTimeMinutes} min" : "—")</td>
+                                    <td>
+                                        @if (s.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a asp-page="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                                            <a asp-page="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                            @if (s.IsActive)
+                                            {
+                                                <form method="post" asp-page-handler="Deactivate">
+                                                    <input type="hidden" name="id" value="@s.Id" />
+                                                    <button class="btn btn-sm btn-outline-warning">Deactivate</button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form method="post" asp-page-handler="Activate">
+                                                    <input type="hidden" name="id" value="@s.Id" />
+                                                    <button class="btn btn-sm btn-outline-success">Activate</button>
+                                                </form>
+                                            }
+                                            <form method="post" asp-page-handler="Delete"
+                                                  onsubmit="return confirm('Delete this service?')">
+                                                <input type="hidden" name="id" value="@s.Id" />
+                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">No services found. <a asp-page="Create">Add one.</a></div>
+            }
+        </div>
+    </div>
+</div>
