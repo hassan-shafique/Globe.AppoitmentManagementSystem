@@ -186,11 +186,63 @@ dotnet ef migrations add AddBusinessType \
 ### Migration
 `AddServiceBufferTime` — adds `BufferTimeMinutes` column to `Services` table.
 
+## Staff Management Module
+
+### Staff entity (`AppointmentSaaS.Domain/Entities/Staff.cs`)
+- Inherits `SoftDeleteEntity`; scoped to a `Tenant` via `TenantId`
+- Optionally scoped to a `Business` via `BusinessId` (null = tenant-wide)
+- Factory: `Staff.Create(tenantId, identityUserId, firstName, lastName, email, phone?, role?, skills?, businessId?)`
+- Methods: `Update(...)`, `Activate()`, `Deactivate()`, `AssignToBusiness(...)`, `SoftDelete()`, `Restore()`
+
+### Fields
+| Field | Type | Notes |
+|---|---|---|
+| `FirstName` | string | Required, max 100 chars |
+| `LastName` | string | Required, max 100 chars |
+| `Email` | string | Required, max 256 chars |
+| `Phone` | string? | Optional, max 30 chars |
+| `Bio` | string? | Optional description |
+| `Role` | string? | Job role/title, max 100 chars |
+| `Skills` | string? | Comma-separated specialisations, max 500 chars |
+| `IsActive` | bool | Controls booking availability |
+
+### CQRS (`AppointmentSaaS.Application/Features/Staff/`)
+| Command/Query | Returns |
+|---|---|
+| `CreateStaffCommand` | `StaffDto` |
+| `UpdateStaffCommand` | `StaffDto` |
+| `DeleteStaffCommand` | void (soft-delete) |
+| `ActivateStaffCommand` | void |
+| `DeactivateStaffCommand` | void |
+| `GetStaffByIdQuery` | `StaffDto` |
+| `GetStaffByTenantQuery` | `IReadOnlyList<StaffDto>` |
+| `GetActiveStaffByTenantQuery` | `IReadOnlyList<StaffDto>` |
+| `GetStaffByBusinessQuery` | `IReadOnlyList<StaffDto>` |
+
+### API endpoints (`/api/staff`)
+| Method | Route | Roles |
+|---|---|---|
+| GET | `/api/staff` | Authenticated |
+| GET | `/api/staff/active` | Authenticated |
+| GET | `/api/staff/{id}` | Authenticated |
+| GET | `/api/staff/business/{businessId}` | Authenticated |
+| POST | `/api/staff` | TenantAdmin, SuperAdmin |
+| PUT | `/api/staff/{id}` | TenantAdmin, SuperAdmin |
+| DELETE | `/api/staff/{id}` | TenantAdmin, SuperAdmin |
+| PATCH | `/api/staff/{id}/activate` | TenantAdmin, SuperAdmin |
+| PATCH | `/api/staff/{id}/deactivate` | TenantAdmin, SuperAdmin |
+
+### Razor Pages (`/Staff/`)
+`Index`, `Create`, `Edit`, `Details`
+
+### Migration
+`AddStaffRoleAndSkills` — adds `Role` and `Skills` columns to `Staff` table.
+
 ## Running Tests
 ```bash
 dotnet test AppointmentSaaS.Tests/
 ```
-~79 tests — Domain (Appointment, Business, Service), Application (Auth, Appointments, Businesses, Services), Infrastructure (Repositories).
+~105 tests — Domain (Appointment, Business, Service, Staff), Application (Auth, Appointments, Businesses, Services, Staff), Infrastructure (Repositories).
 
 ## Architecture Notes
 

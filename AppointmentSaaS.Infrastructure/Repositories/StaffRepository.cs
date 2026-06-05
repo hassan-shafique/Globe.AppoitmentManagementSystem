@@ -14,6 +14,12 @@ public class StaffRepository(AppDbContext context)
             .OrderBy(s => s.LastName).ThenBy(s => s.FirstName)
             .ToListAsync(ct);
 
+    public async Task<IReadOnlyList<Staff>> GetActiveByTenantAsync(Guid tenantId, CancellationToken ct = default) =>
+        await DbSet
+            .Where(s => s.TenantId == tenantId && s.IsActive)
+            .OrderBy(s => s.LastName).ThenBy(s => s.FirstName)
+            .ToListAsync(ct);
+
     public async Task<IReadOnlyList<Staff>> GetByBusinessAsync(Guid businessId, CancellationToken ct = default) =>
         await DbSet
             .Where(s => s.BusinessId == businessId)

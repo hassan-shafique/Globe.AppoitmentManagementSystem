@@ -15,7 +15,8 @@ public class MappingProfile : Profile
         CreateMap<Tenant, TenantDto>();
         CreateMap<Business, BusinessDto>();
         CreateMap<Service, ServiceDto>();
-        CreateMap<Staff, StaffDto>();
+        CreateMap<Staff, StaffDto>()
+            .ForMember(d => d.FullName, o => o.MapFrom(s => s.FullName));
         CreateMap<Appointment, AppointmentDto>()
             .ForMember(d => d.ServiceName, o => o.MapFrom(s => s.Service != null ? s.Service.Name : string.Empty))
             .ForMember(d => d.StaffName, o => o.MapFrom(s => s.Staff != null ? s.Staff.FullName : string.Empty))

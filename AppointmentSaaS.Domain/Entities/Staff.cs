@@ -46,6 +46,12 @@ public class Staff : SoftDeleteEntity
     /// <summary>Optional bio or short description displayed in the booking UI.</summary>
     public string? Bio { get; private set; }
 
+    /// <summary>Job role or title (e.g. "Doctor", "Receptionist").</summary>
+    public string? Role { get; private set; }
+
+    /// <summary>Comma-separated list of skills or specialisations (e.g. "Botox,Fillers").</summary>
+    public string? Skills { get; private set; }
+
     /// <summary>Whether this staff member is currently available for booking.</summary>
     public bool IsActive { get; private set; } = true;
 
@@ -65,20 +71,20 @@ public class Staff : SoftDeleteEntity
     /// <summary>
     /// Creates a new <see cref="Staff"/> member.
     /// </summary>
-    /// <param name="tenantId">Owning tenant.</param>
-    /// <param name="identityUserId">ASP.NET Identity user ID for portal access.</param>
-    /// <param name="firstName">Given name.</param>
-    /// <param name="lastName">Family name.</param>
-    /// <param name="email">Contact email.</param>
-    /// <param name="businessId">Optional primary business location assignment.</param>
     public static Staff Create(
         Guid tenantId,
         string identityUserId,
         string firstName,
         string lastName,
         string email,
+        string? phone = null,
+        string? role = null,
+        string? skills = null,
         Guid? businessId = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
         return new Staff
         {
             TenantId = tenantId,
@@ -86,6 +92,9 @@ public class Staff : SoftDeleteEntity
             FirstName = firstName,
             LastName = lastName,
             Email = email,
+            Phone = phone,
+            Role = role,
+            Skills = skills,
             BusinessId = businessId
         };
     }
@@ -94,13 +103,18 @@ public class Staff : SoftDeleteEntity
     public string FullName => $"{FirstName} {LastName}";
 
     /// <summary>Updates profile fields. Sets <see cref="AuditableEntity.UpdatedAt"/>.</summary>
-    public void Update(string firstName, string lastName, string email, string? phone, string? bio)
+    public void Update(string firstName, string lastName, string email, string? phone, string? bio, string? role, string? skills)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         Phone = phone;
         Bio = bio;
+        Role = role;
+        Skills = skills;
         UpdatedAt = DateTime.UtcNow;
     }
 
